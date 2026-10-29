@@ -40,7 +40,10 @@ class ExpenseDB {
 
   parseAmount(expressionStr) {
     if (typeof expressionStr === 'number') return expressionStr;
-    const cleanStr = String(expressionStr || '0').replace(/[₹Rs.]/g, '').trim();
+    const cleanStr = String(expressionStr || '0')
+      .replace(/₹/g, '')
+      .replace(/Rs\.?/gi, '')
+      .trim();
     const parts = cleanStr.split('+');
     let total = 0.0;
     for (const p of parts) {
