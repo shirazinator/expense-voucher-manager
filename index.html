@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Expenses">
+  <meta name="theme-color" content="#1E3A8A">
+  <link rel="manifest" href="manifest.json">
+  <title>Expense Voucher & Bill Manager</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Client-Side Libraries: 100% In-Browser Execution (Zero Server Required) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+  <!-- App Engines -->
+  <script src="db.js"></script>
+  <script src="demo-data.js"></script>
+  <script src="pdf-export.js"></script>
+  <script src="excel-export.js"></script>
+
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    .glass-card { background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px); }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen pb-24">
+
+  <!-- Top Navigation Bar -->
+  <header class="bg-blue-900 text-white shadow-md sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-blue-800 flex items-center justify-center border border-blue-700 shadow-inner">
+          <i class="fa-solid fa-receipt text-emerald-400 text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold leading-tight flex items-center gap-2">
+            <span>Expense Voucher Manager</span>
+            <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-1.5 py-0.5 rounded font-mono">100% Private</span>
+          </h1>
+          <p class="text-xs text-blue-200">Device-Only Storage • Zero Server Data Leak</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="openAddModal()" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-lg shadow flex items-center gap-2 transition">
+          <i class="fa-solid fa-plus"></i>
+          <span>Add Expense</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-5 space-y-5">
+
+    <!-- Privacy Banner -->
+    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs text-emerald-900">
+      <div class="flex items-center gap-2.5">
+        <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <span><b>Device Sandbox Storage:</b> All expenses, bank screenshots, and bills are saved <b>only inside your device's browser</b>. Zero server data leakage.</span>
+      </div>
+      <div class="flex items-center gap-3 shrink-0">
+        <button onclick="backupData()" class="font-bold underline hover:text-emerald-700 flex items-center gap-1" title="Download private backup JSON">
+          <i class="fa-solid fa-download"></i> Backup
+        </button>
+        <span class="text-emerald-300">|</span>
+        <label class="font-bold underline hover:text-emerald-700 flex items-center gap-1 cursor-pointer" title="Restore from backup JSON">
+          <i class="fa-solid fa-upload"></i> Restore
+          <input type="file" accept=".json" class="hidden" onchange="restoreData(event)">
+        </label>
+        <span class="text-emerald-300">|</span>
+        <button onclick="clearAllData()" class="text-rose-600 hover:text-rose-800 font-bold underline flex items-center gap-1" title="Wipe local storage">
+          <i class="fa-regular fa-trash-can"></i> Clear All
+        </button>
+      </div>
+    </div>
+
+    <!-- Cycle Filter & Date Range Bar -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <i class="fa-regular fa-calendar-days text-blue-600 text-lg"></i>
+          <span class="text-sm font-bold text-slate-700">Expense Cycle / Filter</span>
+        </div>
+        <!-- Quick Preset Buttons -->
+        <div class="flex flex-wrap gap-1.5 text-xs">
+          <button onclick="setCyclePreset('all')" class="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium">All Time</button>
+          <button onclick="setCyclePreset('nov')" class="px-2.5 py-1 rounded-md bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium">Nov 5 – Nov 30</button>
+          <button onclick="setCyclePreset('oct')" class="px-2.5 py-1 rounded-md bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium">Oct Tour (6-18)</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-1">
+        <div>
+          <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Start Date</label>
+          <input type="date" id="filterStartDate" onchange="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase tracking-wider">End Date</label>
+          <input type="date" id="filterEndDate" onchange="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Category</label>
+          <select id="filterCategory" onchange="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+            <option value="all">All Categories</option>
+            <option value="Food">Food & Beverage</option>
+            <option value="Travel">Travel / Uber</option>
+            <option value="Fuel">Fuel / Petrol</option>
+            <option value="Accommodation">Accommodation</option>
+            <option value="Medical">Medical</option>
+            <option value="Food Supplies">Supplies</option>
+            <option value="Transport">Transport</option>
+          </select>
+        </div>
+        <div class="flex items-end gap-2">
+          <input type="text" id="filterSearch" placeholder="Search item, note..." oninput="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+          <button onclick="resetFilter()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs" title="Reset filter">
+            <i class="fa-solid fa-rotate-left"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Summary Metrics -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="bg-white rounded-xl p-3.5 shadow-sm border border-slate-200 flex items-center gap-3">
+        <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shrink-0">
+          <i class="fa-solid fa-indian-rupee-sign"></i>
+        </div>
+        <div>
+          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Cycle Total</div>
+          <div id="statTotalAmount" class="text-base sm:text-lg font-extrabold text-emerald-700">₹ 0.00</div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl p-3.5 shadow-sm border border-slate-200 flex items-center gap-3">
+        <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl shrink-0">
+          <i class="fa-solid fa-file-invoice"></i>
+        </div>
+        <div>
+          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Vouchers</div>
+          <div id="statTotalCount" class="text-base sm:text-lg font-extrabold text-blue-900">0 Items</div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl p-3.5 shadow-sm border border-slate-200 flex items-center gap-3">
+        <div class="w-11 h-11 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl shrink-0">
+          <i class="fa-solid fa-paperclip"></i>
+        </div>
+        <div>
+          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Bills Attached</div>
+          <div id="statBillsCount" class="text-base sm:text-lg font-extrabold text-purple-700">0</div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl p-3.5 shadow-sm border border-slate-200 flex items-center gap-3">
+        <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl shrink-0">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div>
+          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">No Official Bill</div>
+          <div id="statNoBillCount" class="text-base sm:text-lg font-extrabold text-amber-700">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Export Action Bar -->
+    <div class="flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-slate-900 to-blue-950 text-white rounded-2xl p-4 shadow-md">
+      <div>
+        <div class="font-bold text-sm sm:text-base flex items-center gap-2">
+          <i class="fa-solid fa-cloud-arrow-down text-emerald-400"></i>
+          <span>Cycle Report Exports</span>
+        </div>
+        <p class="text-xs text-slate-300">Generated 100% on this device in 1-page-per-voucher audit format</p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <button id="btnExportPDF" onclick="triggerExport('pdf')" class="bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-lg shadow transition flex items-center gap-2">
+          <i class="fa-solid fa-file-pdf"></i>
+          <span>PDF Vouchers</span>
+        </button>
+        <button id="btnExportExcel" onclick="triggerExport('excel')" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-lg shadow transition flex items-center gap-2">
+          <i class="fa-solid fa-file-excel"></i>
+          <span>Excel Sheet</span>
+        </button>
+        <button id="btnExportZip" onclick="triggerExport('zip')" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-lg shadow transition flex items-center gap-2">
+          <i class="fa-solid fa-file-zipper"></i>
+          <span>Full Bundle (ZIP)</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Transactions List Container -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+        <div class="font-bold text-sm text-slate-700 flex items-center gap-2">
+          <i class="fa-solid fa-list-check text-blue-600"></i>
+          <span>Recorded Expenses</span>
+          <span id="filteredCountBadge" class="bg-blue-100 text-blue-800 text-[11px] px-2 py-0.5 rounded-full font-bold">0</span>
+        </div>
+        <div class="text-xs text-slate-500 italic hidden sm:block">
+          <i class="fa-regular fa-clipboard mr-1"></i> Tip: Press <b>Cmd+V / Ctrl+V</b> to paste screenshots
+        </div>
+      </div>
+
+      <!-- Desktop Table / Mobile Cards -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs sm:text-sm hidden md:table">
+          <thead class="bg-slate-100 text-slate-500 uppercase text-[11px] font-bold tracking-wider border-b border-slate-200">
+            <tr>
+              <th class="px-4 py-3 w-12 text-center">#</th>
+              <th class="px-4 py-3 w-28">Date</th>
+              <th class="px-4 py-3">Description</th>
+              <th class="px-4 py-3 w-28">Category</th>
+              <th class="px-4 py-3 w-28 text-right">Amount</th>
+              <th class="px-4 py-3 w-36 text-center">Attachments</th>
+              <th class="px-4 py-3">Audit Note</th>
+              <th class="px-4 py-3 w-16 text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody id="expensesTableBody" class="divide-y divide-slate-100"></tbody>
+        </table>
+
+        <!-- Mobile Card List View -->
+        <div id="expensesMobileList" class="divide-y divide-slate-100 md:hidden"></div>
+      </div>
+
+      <!-- Empty state -->
+      <div id="emptyState" class="hidden p-12 text-center space-y-3">
+        <div class="w-14 h-14 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-2xl">
+          <i class="fa-regular fa-folder-open"></i>
+        </div>
+        <div class="text-base font-bold text-slate-600">No expenses recorded yet</div>
+        <p class="text-xs text-slate-400">Add an expense or load the demo tour data to test export features.</p>
+        <div class="flex flex-wrap justify-center gap-2 pt-2">
+          <button onclick="openAddModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-plus"></i> Add First Expense
+          </button>
+          <button onclick="loadDemoTourData()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Load Oct Tour Demo (56 Records)
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ADD EXPENSE MODAL -->
+  <div id="addModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      
+      <!-- Modal Header -->
+      <div class="px-5 py-3.5 bg-blue-900 text-white flex justify-between items-center shrink-0">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-receipt text-emerald-400"></i>
+          <h2 class="font-bold text-base">Record New Expense</h2>
+        </div>
+        <button onclick="closeAddModal()" class="text-blue-200 hover:text-white text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <form id="addExpenseForm" class="p-5 space-y-4 overflow-y-auto" onsubmit="submitNewExpense(event)">
+        
+        <!-- Date & Paid By -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Date *</label>
+            <input type="date" id="newDate" required class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Paid By</label>
+            <input type="text" id="newPaidBy" value="Shiraz" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">Description / Item *</label>
+          <input type="text" id="newDescription" required placeholder="e.g. Zomato lunch, Uber ride, Dinner" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+          <!-- Quick suggestions -->
+          <div class="flex flex-wrap gap-1.5 mt-1.5 text-[11px]">
+            <button type="button" onclick="setDesc('Breakfast')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Breakfast</button>
+            <button type="button" onclick="setDesc('Lunch')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Lunch</button>
+            <button type="button" onclick="setDesc('Dinner')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Dinner</button>
+            <button type="button" onclick="setDesc('Uber ride')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Uber ride</button>
+            <button type="button" onclick="setDesc('Petrol')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Petrol</button>
+            <button type="button" onclick="setDesc('Water bottles')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Water bottles</button>
+          </div>
+        </div>
+
+        <!-- Category Pills -->
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">Category</label>
+          <input type="hidden" id="newCategory" value="Food">
+          <div class="flex flex-wrap gap-1.5" id="categoryPills">
+            <button type="button" onclick="selectCategory('Food')" class="cat-pill active text-xs font-semibold px-3 py-1 rounded-full border border-blue-600 bg-blue-600 text-white">Food</button>
+            <button type="button" onclick="selectCategory('Travel')" class="cat-pill text-xs font-semibold px-3 py-1 rounded-full border border-slate-300 text-slate-600 hover:bg-slate-100">Travel</button>
+            <button type="button" onclick="selectCategory('Fuel')" class="cat-pill text-xs font-semibold px-3 py-1 rounded-full border border-slate-300 text-slate-600 hover:bg-slate-100">Fuel</button>
+            <button type="button" onclick="selectCategory('Accommodation')" class="cat-pill text-xs font-semibold px-3 py-1 rounded-full border border-slate-300 text-slate-600 hover:bg-slate-100">Hotel</button>
+            <button type="button" onclick="selectCategory('Medical')" class="cat-pill text-xs font-semibold px-3 py-1 rounded-full border border-slate-300 text-slate-600 hover:bg-slate-100">Medical</button>
+            <button type="button" onclick="selectCategory('Food Supplies')" class="cat-pill text-xs font-semibold px-3 py-1 rounded-full border border-slate-300 text-slate-600 hover:bg-slate-100">Supplies</button>
+            <button type="button" onclick="selectCategory('Other')" class="cat-pill text-xs font-semibold px-3 py-1 rounded-full border border-slate-300 text-slate-600 hover:bg-slate-100">Other</button>
+          </div>
+        </div>
+
+        <!-- Amount (Supports Formula) -->
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="text-xs font-bold text-slate-600">Amount (INR) *</label>
+            <span id="calculatedTotalBadge" class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Total: ₹ 0.00</span>
+          </div>
+          <input type="text" id="newAmount" required placeholder="e.g. 141+10 or 279.83" oninput="updateCalculatedTotal()" class="w-full text-sm font-semibold px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+          <p class="text-[11px] text-slate-400 mt-1">Split payments supported (e.g., <code class="bg-slate-100 px-1 rounded">235+20</code> or <code class="bg-slate-100 px-1 rounded">3600+4800+100</code>).</p>
+        </div>
+
+        <!-- ATTACHMENT 1: PhonePe / Payment Proofs -->
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+              <i class="fa-solid fa-mobile-screen text-indigo-600"></i>
+              <span>Payment Screenshot(s)</span>
+            </span>
+            <span class="text-[11px] text-indigo-600 font-medium">Cmd+V to Paste</span>
+          </div>
+
+          <div class="flex gap-2">
+            <label class="cursor-pointer bg-white border border-slate-300 hover:border-indigo-500 text-slate-700 text-xs px-3 py-2 rounded-lg font-medium flex items-center gap-2 shadow-sm transition">
+              <i class="fa-solid fa-image text-indigo-600"></i> Choose Screenshot
+              <input type="file" id="filePayments" multiple accept="image/*" class="hidden" onchange="handlePaymentFiles(event)">
+            </label>
+          </div>
+
+          <!-- Thumbnails list -->
+          <div id="paymentThumbnails" class="flex flex-wrap gap-2 pt-1"></div>
+        </div>
+
+        <!-- ATTACHMENT 2: Softcopy Bill / Camera Photo -->
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+              <i class="fa-solid fa-receipt text-emerald-600"></i>
+              <span>Softcopy Bill / Receipt</span>
+            </span>
+            <span class="text-[11px] text-slate-400">Optional if no bill issued</span>
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            <!-- Native Phone Camera -->
+            <label class="cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-lg font-medium flex items-center gap-2 shadow-sm transition">
+              <i class="fa-solid fa-camera"></i> Take Photo
+              <input type="file" id="fileBillsCamera" capture="environment" accept="image/*" class="hidden" onchange="handleBillFiles(event)">
+            </label>
+
+            <!-- File Upload -->
+            <label class="cursor-pointer bg-white border border-slate-300 hover:border-emerald-500 text-slate-700 text-xs px-3 py-2 rounded-lg font-medium flex items-center gap-2 shadow-sm transition">
+              <i class="fa-solid fa-file-arrow-up text-emerald-600"></i> Choose File
+              <input type="file" id="fileBillsUpload" multiple accept="image/*" class="hidden" onchange="handleBillFiles(event)">
+            </label>
+          </div>
+
+          <!-- Thumbnails list -->
+          <div id="billThumbnails" class="flex flex-wrap gap-2 pt-1"></div>
+        </div>
+
+        <!-- Remark / Audit Note -->
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">Remark / Audit Note</label>
+          <input type="text" id="newRemark" placeholder="e.g. Bill not available, Water bottle not in bill" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+          <!-- Quick remark chips -->
+          <div class="flex flex-wrap gap-1.5 mt-1.5 text-[11px]">
+            <button type="button" onclick="setRemark('Bill not available; cafe name and note added in payment')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Bill not available</button>
+            <button type="button" onclick="setRemark('Canteen bill machine not working')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Machine out of order</button>
+            <button type="button" onclick="setRemark('Extra water bottle charge not included in bill')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Extra water</button>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closeAddModal()" class="px-4 py-2 border border-slate-300 text-slate-600 text-xs sm:text-sm font-semibold rounded-lg hover:bg-slate-100">Cancel</button>
+          <button type="submit" id="btnSaveExpense" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold rounded-lg shadow transition flex items-center gap-2">
+            <i class="fa-solid fa-check"></i> Save Expense
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX MODAL -->
+  <div id="lightboxModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden" onclick="closeLightbox()">
+    <div class="relative max-w-4xl max-h-[90vh] flex flex-col items-center" onclick="event.stopPropagation()">
+      <button onclick="closeLightbox()" class="absolute -top-10 right-0 text-white text-2xl hover:text-slate-300">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <img id="lightboxImg" src="" alt="Voucher Attachment" class="max-h-[82vh] max-w-full rounded-lg shadow-2xl object-contain border border-slate-700 bg-black">
+      <div id="lightboxCaption" class="text-white text-xs mt-2 font-medium tracking-wide"></div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    let currentExpenses = [];
+    let pendingPayments = []; // Array of { name, blob, mimeType }
+    let pendingBills = [];    // Array of { name, blob, mimeType }
+
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed', err));
+      });
+    }
+
+    // On Load
+    document.addEventListener('DOMContentLoaded', async () => {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('newDate').value = today;
+
+      // Setup global paste event listener
+      window.addEventListener('paste', handleGlobalPaste);
+
+      // Initialize DB & load
+      await window.appDB.init();
+      await loadExpenses();
+    });
+
+    // Preset Cycles
+    function setCyclePreset(type) {
+      const sInput = document.getElementById('filterStartDate');
+      const eInput = document.getElementById('filterEndDate');
+
+      if (type === 'all') {
+        sInput.value = '';
+        eInput.value = '';
+      } else if (type === 'nov') {
+        sInput.value = '2026-11-05';
+        eInput.value = '2026-11-30';
+      } else if (type === 'oct') {
+        sInput.value = '2026-10-06';
+        eInput.value = '2026-10-18';
+      }
+      applyFilter();
+    }
+
+    async function applyFilter() {
+      const s = document.getElementById('filterStartDate').value;
+      const e = document.getElementById('filterEndDate').value;
+      const c = document.getElementById('filterCategory').value;
+      const q = document.getElementById('filterSearch').value;
+      await loadExpenses(s, e, c, q);
+    }
+
+    async function resetFilter() {
+      document.getElementById('filterStartDate').value = '';
+      document.getElementById('filterEndDate').value = '';
+      document.getElementById('filterCategory').value = 'all';
+      document.getElementById('filterSearch').value = '';
+      await loadExpenses();
+    }
+
+    // Load from IndexedDB
+    async function loadExpenses(start='', end='', cat='all', search='') {
+      try {
+        currentExpenses = await window.appDB.getAllExpenses(start, end, cat, search);
+        renderDashboard(currentExpenses);
+      } catch (err) {
+        console.error("Error loading expenses from IndexedDB:", err);
+      }
+    }
+
+    function renderDashboard(list) {
+      const totalAmount = list.reduce((sum, e) => sum + (e.amountTotal || 0), 0);
+      document.getElementById('statTotalAmount').textContent = `₹ ${totalAmount.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+      document.getElementById('statTotalCount').textContent = `${list.length} Items`;
+
+      let billsCount = 0;
+      let noBillCount = 0;
+      list.forEach(e => {
+        if (e.bills && e.bills.length > 0) billsCount += e.bills.length;
+        else noBillCount++;
+      });
+
+      document.getElementById('statBillsCount').textContent = billsCount;
+      document.getElementById('statNoBillCount').textContent = noBillCount;
+      document.getElementById('filteredCountBadge').textContent = list.length;
+
+      const tbody = document.getElementById('expensesTableBody');
+      const mobileList = document.getElementById('expensesMobileList');
+      const emptyState = document.getElementById('emptyState');
+
+      tbody.innerHTML = '';
+      mobileList.innerHTML = '';
+
+      if (list.length === 0) {
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      emptyState.classList.add('hidden');
+
+      list.forEach((e, idx) => {
+        const sNo = idx + 1;
+        const payments = e.payments || [];
+        const bills = e.bills || [];
+
+        // Desktop Row
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition";
+        tr.innerHTML = `
+          <td class="px-4 py-3 text-center font-bold text-slate-400">${sNo}</td>
+          <td class="px-4 py-3 font-semibold text-slate-600 whitespace-nowrap">${e.date}</td>
+          <td class="px-4 py-3 font-bold text-slate-800">${e.description}</td>
+          <td class="px-4 py-3">
+            <span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold ${getCategoryBadgeClass(e.category)}">${e.category}</span>
+          </td>
+          <td class="px-4 py-3 text-right font-extrabold text-emerald-700 whitespace-nowrap">₹ ${e.amountExpression || e.amountTotal}</td>
+          <td class="px-4 py-3 text-center">
+            <div class="flex items-center justify-center gap-1.5">
+              ${renderBlobThumbnails(payments, 'Payment')}
+              ${renderBlobThumbnails(bills, 'Bill')}
+              ${bills.length === 0 ? '<span class="text-[10px] bg-amber-50 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded font-bold">No Bill</span>' : ''}
+            </div>
+          </td>
+          <td class="px-4 py-3 text-slate-500 text-xs italic">${e.remark || '-'}</td>
+          <td class="px-4 py-3 text-center">
+            <button onclick="deleteExpenseItem(${e.id})" class="text-slate-400 hover:text-rose-600 transition" title="Delete">
+              <i class="fa-regular fa-trash-can"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+
+        // Mobile Card
+        const card = document.createElement('div');
+        card.className = "p-4 space-y-2 hover:bg-slate-50 transition";
+        card.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-400">#${sNo}</span>
+              <span class="text-xs text-slate-500 font-semibold">${e.date}</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${getCategoryBadgeClass(e.category)}">${e.category}</span>
+            </div>
+            <div class="text-sm font-extrabold text-emerald-700">₹ ${e.amountExpression || e.amountTotal}</div>
+          </div>
+          <div class="font-bold text-slate-800 text-sm">${e.description}</div>
+          ${e.remark ? `<div class="text-xs text-slate-500 italic bg-slate-50 p-1.5 rounded border border-slate-100">${e.remark}</div>` : ''}
+          <div class="flex items-center justify-between pt-1">
+            <div class="flex items-center gap-1.5">
+              ${renderBlobThumbnails(payments, 'Payment')}
+              ${renderBlobThumbnails(bills, 'Bill')}
+              ${bills.length === 0 ? '<span class="text-[10px] bg-amber-50 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded font-bold">No Bill</span>' : ''}
+            </div>
+            <button onclick="deleteExpenseItem(${e.id})" class="text-slate-400 hover:text-rose-600 text-xs p-1">
+              <i class="fa-regular fa-trash-can"></i>
+            </button>
+          </div>
+        `;
+        mobileList.appendChild(card);
+      });
+    }
+
+    function renderBlobThumbnails(items, type) {
+      if (!items || items.length === 0) return '';
+      return items.map((item, idx) => {
+        const url = URL.createObjectURL(item.blob);
+        return `
+          <img src="${url}" alt="${type}" onclick="openLightbox('${url}', '${type} ${idx+1}: ${item.name || ''}')" 
+               class="w-7 h-7 rounded border border-slate-300 object-cover cursor-pointer hover:scale-110 transition shadow-xs">
+        `;
+      }).join('');
+    }
+
+    function getCategoryBadgeClass(cat) {
+      switch ((cat || '').toLowerCase()) {
+        case 'food':
+        case 'food & beverage': return 'bg-amber-100 text-amber-800';
+        case 'travel': return 'bg-blue-100 text-blue-800';
+        case 'fuel': return 'bg-rose-100 text-rose-800';
+        case 'accommodation': return 'bg-purple-100 text-purple-800';
+        case 'medical': return 'bg-emerald-100 text-emerald-800';
+        default: return 'bg-slate-100 text-slate-700';
+      }
+    }
+
+    // Modal
+    function openAddModal() {
+      document.getElementById('addModal').classList.remove('hidden');
+      pendingPayments = [];
+      pendingBills = [];
+      renderThumbnails();
+      document.getElementById('newDescription').focus();
+    }
+
+    function closeAddModal() {
+      document.getElementById('addModal').classList.add('hidden');
+      document.getElementById('addExpenseForm').reset();
+      pendingPayments = [];
+      pendingBills = [];
+      renderThumbnails();
+    }
+
+    function setDesc(val) { document.getElementById('newDescription').value = val; }
+    function setRemark(val) { document.getElementById('newRemark').value = val; }
+
+    function selectCategory(cat) {
+      document.getElementById('newCategory').value = cat;
+      document.querySelectorAll('#categoryPills .cat-pill').forEach(btn => {
+        if (btn.textContent.trim().toLowerCase() === cat.toLowerCase() || (cat === 'Accommodation' && btn.textContent.trim() === 'Hotel') || (cat === 'Food Supplies' && btn.textContent.trim() === 'Supplies')) {
+          btn.className = "cat-pill active text-xs font-semibold px-3 py-1 rounded-full border border-blue-600 bg-blue-600 text-white";
+        } else {
+          btn.className = "cat-pill text-xs font-semibold px-3 py-1 rounded-full border border-slate-300 text-slate-600 hover:bg-slate-100";
+        }
+      });
+    }
+
+    function updateCalculatedTotal() {
+      const val = document.getElementById('newAmount').value;
+      const total = window.appDB.parseAmount(val);
+      document.getElementById('calculatedTotalBadge').textContent = `Total: ₹ ${total.toFixed(2)}`;
+    }
+
+    // File Handling
+    function handlePaymentFiles(e) {
+      const files = Array.from(e.target.files);
+      files.forEach(f => {
+        pendingPayments.push({ name: f.name, blob: f, mimeType: f.type });
+      });
+      renderThumbnails();
+    }
+
+    function handleBillFiles(e) {
+      const files = Array.from(e.target.files);
+      files.forEach(f => {
+        pendingBills.push({ name: f.name, blob: f, mimeType: f.type });
+      });
+      renderThumbnails();
+    }
+
+    function handleGlobalPaste(e) {
+      if (!e.clipboardData || !e.clipboardData.items) return;
+      const items = e.clipboardData.items;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          const blob = items[i].getAsFile();
+          if (blob) {
+            if (document.getElementById('addModal').classList.contains('hidden')) {
+              openAddModal();
+            }
+            pendingPayments.push({ name: `pasted_screenshot_${Date.now()}.png`, blob: blob, mimeType: blob.type });
+            renderThumbnails();
+            showToast("Screenshot attached from clipboard!");
+            break;
+          }
+        }
+      }
+    }
+
+    function renderThumbnails() {
+      const pContainer = document.getElementById('paymentThumbnails');
+      const bContainer = document.getElementById('billThumbnails');
+
+      pContainer.innerHTML = pendingPayments.map((f, i) => `
+        <div class="relative w-12 h-12 rounded border border-slate-300 overflow-hidden shadow-xs">
+          <img src="${URL.createObjectURL(f.blob)}" class="w-full h-full object-cover">
+          <button type="button" onclick="removePendingPayment(${i})" class="absolute top-0 right-0 bg-rose-600 text-white w-4 h-4 text-[9px] flex items-center justify-center font-bold">✕</button>
+        </div>
+      `).join('');
+
+      bContainer.innerHTML = pendingBills.map((f, i) => `
+        <div class="relative w-12 h-12 rounded border border-slate-300 overflow-hidden shadow-xs">
+          <img src="${URL.createObjectURL(f.blob)}" class="w-full h-full object-cover">
+          <button type="button" onclick="removePendingBill(${i})" class="absolute top-0 right-0 bg-rose-600 text-white w-4 h-4 text-[9px] flex items-center justify-center font-bold">✕</button>
+        </div>
+      `).join('');
+    }
+
+    function removePendingPayment(i) { pendingPayments.splice(i, 1); renderThumbnails(); }
+    function removePendingBill(i) { pendingBills.splice(i, 1); renderThumbnails(); }
+
+    // Save to IndexedDB
+    async function submitNewExpense(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSaveExpense');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
+
+      try {
+        await window.appDB.addExpense({
+          date: document.getElementById('newDate').value,
+          description: document.getElementById('newDescription').value,
+          category: document.getElementById('newCategory').value,
+          amountExpression: document.getElementById('newAmount').value,
+          paidBy: document.getElementById('newPaidBy').value,
+          remark: document.getElementById('newRemark').value,
+          payments: pendingPayments,
+          bills: pendingBills
+        });
+
+        closeAddModal();
+        showToast("Expense saved in device storage!");
+        await applyFilter();
+      } catch (err) {
+        alert("Error saving: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-check"></i> Save Expense`;
+      }
+    }
+
+    async function deleteExpenseItem(id) {
+      if (!confirm("Delete this expense voucher from your device?")) return;
+      await window.appDB.deleteExpense(id);
+      showToast("Expense removed.");
+      await applyFilter();
+    }
+
+    // In-Browser Exports (100% Client-Side)
+    async function triggerExport(type) {
+      if (currentExpenses.length === 0) {
+        alert("No expenses in the current filter to export!");
+        return;
+      }
+
+      const s = document.getElementById('filterStartDate').value || 'start';
+      const e = document.getElementById('filterEndDate').value || 'end';
+      const label = `${s}_to_${e}`;
+
+      const btn = document.getElementById(`btnExport${type.toUpperCase() === 'ZIP' ? 'Zip' : type.toUpperCase() === 'EXCEL' ? 'Excel' : 'PDF'}`);
+      const origHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Generating...`;
+
+      try {
+        if (type === 'pdf') {
+          const pdfBlob = await window.generatePDFVouchers(currentExpenses, label);
+          saveAs(pdfBlob, `Expense_Vouchers_${label}.pdf`);
+          showToast("PDF Vouchers downloaded!");
+        } else if (type === 'excel') {
+          const xlsxBlob = window.generateExcelReport(currentExpenses, label);
+          saveAs(xlsxBlob, `Expense_Report_${label}.xlsx`);
+          showToast("Excel spreadsheet downloaded!");
+        } else if (type === 'zip') {
+          const zip = new JSZip();
+          const pdfBlob = await window.generatePDFVouchers(currentExpenses, label);
+          zip.file(`Expense_Vouchers_${label}.pdf`, pdfBlob);
+
+          const xlsxBlob = window.generateExcelReport(currentExpenses, label);
+          zip.file(`Expense_Report_${label}.xlsx`, xlsxBlob);
+
+          const receiptsFolder = zip.folder("Receipts");
+          currentExpenses.forEach((exp, idx) => {
+            const prefix = `Voucher_${String(idx + 1).padStart(2, '0')}`;
+            (exp.payments || []).forEach((p, pIdx) => {
+              receiptsFolder.file(`${prefix}_Payment_${pIdx+1}_${p.name || 'screenshot.jpg'}`, p.blob);
+            });
+            (exp.bills || []).forEach((b, bIdx) => {
+              receiptsFolder.file(`${prefix}_Bill_${bIdx+1}_${b.name || 'bill.jpg'}`, b.blob);
+            });
+          });
+
+          const zipBlob = await zip.generateAsync({ type: "blob" });
+          saveAs(zipBlob, `Expense_Bundle_${label}.zip`);
+          showToast("Complete ZIP bundle downloaded!");
+        }
+      } catch (err) {
+        alert("Export error: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+      }
+    }
+
+    // Data Backup
+    async function backupData() {
+      const all = await window.appDB.getAllExpenses();
+      if (all.length === 0) {
+        alert("No data to backup!");
+        return;
+      }
+
+      // Convert Blobs to Base64 for JSON serialization
+      const serialized = await Promise.all(all.map(async (e) => {
+        const pBase64 = await Promise.all((e.payments || []).map(async p => ({
+          name: p.name,
+          mimeType: p.mimeType,
+          data: await blobToBase64(p.blob)
+        })));
+        const bBase64 = await Promise.all((e.bills || []).map(async b => ({
+          name: b.name,
+          mimeType: b.mimeType,
+          data: await blobToBase64(b.blob)
+        })));
+        return { ...e, payments: pBase64, bills: bBase64 };
+      }));
+
+      const jsonStr = JSON.stringify(serialized, null, 2);
+      const blob = new Blob([jsonStr], { type: "application/json" });
+      saveAs(blob, `Expense_Backup_${new Date().toISOString().split('T')[0]}.json`);
+      showToast("Backup file downloaded!");
+    }
+
+    function blobToBase64(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    function dataURLtoBlob(dataurl) {
+      const arr = dataurl.split(',');
+      const mime = (arr[0].match(/:(.*?);/) || [])[1] || 'image/jpeg';
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while(n--){
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new Blob([u8arr], {type: mime});
+    }
+
+    // Restore Backup
+    async function restoreData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const items = JSON.parse(e.target.result);
+          if (!Array.isArray(items)) {
+            throw new Error('Invalid backup format: expected an array of expenses.');
+          }
+
+          if (!confirm(`Found ${items.length} expenses in backup file. Import them into this device?`)) return;
+
+          for (const item of items) {
+            const payments = (item.payments || []).map(p => {
+              if (p.data && typeof p.data === 'string' && p.data.startsWith('data:')) {
+                return { name: p.name, blob: dataURLtoBlob(p.data), mimeType: p.mimeType };
+              }
+              return p;
+            });
+
+            const bills = (item.bills || []).map(b => {
+              if (b.data && typeof b.data === 'string' && b.data.startsWith('data:')) {
+                return { name: b.name, blob: dataURLtoBlob(b.data), mimeType: b.mimeType };
+              }
+              return b;
+            });
+
+            await window.appDB.addExpense({
+              date: item.date,
+              description: item.description,
+              category: item.category,
+              amountExpression: item.amountExpression || item.amountTotal,
+              paidBy: item.paidBy || 'Shiraz',
+              remark: item.remark || '',
+              payments: payments,
+              bills: bills
+            });
+          }
+
+          showToast(`Restored ${items.length} expenses!`);
+          await applyFilter();
+        } catch (err) {
+          alert('Error restoring backup: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Load Demo Tour Data (56 items)
+    async function loadDemoTourData() {
+      if (!window.DEMO_TOUR_DATA || window.DEMO_TOUR_DATA.length === 0) {
+        alert("Demo data not available.");
+        return;
+      }
+      if (!confirm(`Load 56 sample tour records into your device database for testing?`)) return;
+
+      for (const item of window.DEMO_TOUR_DATA) {
+        await window.appDB.addExpense(item);
+      }
+      showToast("Loaded 56 sample tour records!");
+      await applyFilter();
+    }
+
+    // Clear All Data
+    async function clearAllData() {
+      if (confirm("Are you sure you want to delete ALL expense records from this device? Make sure you have downloaded a Backup, PDF, or Excel sheet first!")) {
+        if (confirm("Confirm one more time: delete all local records?")) {
+          await window.appDB.clearAll();
+          showToast("All data cleared from device.");
+          await applyFilter();
+        }
+      }
+    }
+
+    // Lightbox
+    function openLightbox(url, caption) {
+      document.getElementById('lightboxImg').src = url;
+      document.getElementById('lightboxCaption').textContent = caption;
+      document.getElementById('lightboxModal').classList.remove('hidden');
+    }
+    function closeLightbox() { document.getElementById('lightboxModal').classList.add('hidden'); }
+
+    // Toast
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.className = "fixed bottom-5 right-5 bg-slate-900 text-white text-xs px-4 py-2.5 rounded-xl shadow-lg z-50 flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2";
+      toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i> ${msg}`;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2500);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "Expense Voucher & Bill Manager",
+  "short_name": "Expenses",
+  "description": "Daily expense tracker and audit-ready voucher generator",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F8FAFC",
+  "theme_color": "#1E3A8A",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231E3A8A'/><path d='M30 25h40v50H30z' fill='%23FFFFFF'/><path d='M38 35h24M38 45h24M38 55h15' stroke='%23047857' stroke-width='4' stroke-linecap='round'/></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

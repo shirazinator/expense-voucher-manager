@@ -1,39 +1,46 @@
-# 🧾 Expense Voucher & Bill Manager (Local Web App)
+# 🧾 Expense Voucher & Bill Manager (Serverless PWA)
 
-A specialized daily expense tracking application designed for business travel and reimbursement claims. It pairs digital payment screenshots (PhonePe, GPay, Paytm) with softcopy bills/receipts, and generates audit-ready, 1-page-per-voucher PDFs and matching Excel spreadsheets for any billing cycle (e.g., Nov 5 to Nov 30).
+A 100% private, client-side expense voucher manager and audit PDF generator.
+Runs entirely in your web browser (iPhone, Android, Mac, Windows). **No backend server required. Zero data leaves your device.**
 
----
-
-## 🚀 Quick Start (Local Setup)
-
-### Option 1: Double-Click (macOS Finder)
-Simply double-click **`start.command`** in the application folder. It will automatically check dependencies, initialize the database, start the server, and open `http://localhost:5050` in your web browser.
-
-### Option 2: Terminal
-```bash
-cd /Users/code_red/.gemini/antigravity/scratch/expense_voucher_app
-bash run.sh
-```
+Live Demo / Hosted on GitHub Pages:  
+👉 **`https://shirazinator.github.io/expense-voucher-manager/`**
 
 ---
 
-## ✨ Features
+## 🔒 100% Device-Level Privacy (Zero Data Breach Risk)
+- **Local Sandbox Storage (IndexedDB):** All expenses, PhonePe screenshots, and camera bill photos are stored strictly inside your phone’s browser sandbox.
+- **Zero Server Hosting:** Nothing is transmitted to any cloud database or server.
+- **Each User Gets Their Own Isolated App:** Anyone who opens the link gets their own private database on their device with zero overlap.
 
-1. **Daily Expense Recording:**
-   - **Smart Split Formula Support:** Type `141+10` or `235+20` or `3600+4800+100` and the app calculates the true total automatically.
-   - **Quick Category Pills:** 1-tap select for `Food`, `Travel`, `Fuel`, `Hotel`, `Medical`, `Supplies`, `Other`.
-   - **Audit Notes & Chips:** 1-tap presets for common notes (*"Bill not available"*, *"Machine out of order"*, *"Extra water bottle charge"*).
+---
 
-2. **Frictionless Screenshot & Bill Attachments:**
-   - **Clipboard Paste (`Cmd+V` / `Ctrl+V`):** Take a screenshot on your computer or phone, press `Cmd+V`, and the screenshot attaches directly to the transaction!
-   - **In-App Camera Capture:** On mobile phones, tapping **"Take Photo"** launches your device camera directly to photograph paper bills on the spot.
-   - **Multi-Attachment Support:** Attach 1, 2, or 3 payment screenshots and multiple bill pages for a single transaction.
+## ✨ Core Features
+1. **Instant Screenshot Pasting (`Cmd+V` / `Ctrl+V`):**
+   - Copy or take a screenshot on your device, press `Cmd+V`, and it attaches directly to your transaction voucher.
+2. **In-App Camera Capture:**
+   - Tap **"Take Photo"** to open your mobile camera directly and snap paper receipts on the fly.
+3. **Split Payment Formulas:**
+   - Supports expressions like `141+10` or `235+20` or `3600+4800+100`. Automatically calculates totals and stacks proofs neatly.
+4. **Billing Cycle Exports (e.g., Nov 5 to Nov 30):**
+   - **Download PDF Vouchers:** Exact 1-page-per-voucher audit PDF generated directly inside the browser using `pdf-lib`.
+   - **Download Excel (.xlsx):** Matching spreadsheet generated directly in the browser using `SheetJS`.
+   - **Download Full Bundle (ZIP):** Bundles PDF, Excel sheet, and all raw receipt photos into one archive using `JSZip`.
+5. **Installable PWA:**
+   - Can be added to your iPhone or Android Home Screen as a standalone full-screen app.
+   - Works offline via Service Worker.
 
-3. **Custom Billing Cycle Exports (e.g., Nov 5 to Nov 30):**
-   - Filter by date range or preset cycles.
-   - **Download PDF Vouchers:** Generates the exact 1-page-per-voucher audit report with side-by-side or stacked payment screenshots and bills, sequential voucher numbering, and official "No Bill Issued" audit notices.
-   - **Download Excel (.xlsx):** Generates the matching spreadsheet with `S. No`, `Date`, `Description`, `Category`, `Amount(INR)`, `Paid By`, `Sheet Page number` (matching the PDF page!), and `Remark`.
-   - **Download Full Bundle (ZIP):** Bundles the PDF, Excel sheet, and all raw receipt images into one organized archive.
+---
 
-4. **Pre-Seeded Historical Data:**
-   - Pre-loaded with all 56 records, 65 payment screenshots, and 42 softcopy bills from the October tour, so you can test exports immediately or review past claims.
+## 🌐 Enabling Free GitHub Pages (1-Minute Setup)
+1. Go to your repository on GitHub:  
+   **`https://github.com/shirazinator/expense-voucher-manager`**
+2. Click **Settings** (tab at the top).
+3. In the left sidebar, click **Pages**.
+4. Under **Build and deployment**:
+   - Source: **Deploy from a branch**
+   - Branch: **`main`**
+   - Folder: **`/ (root)`**
+5. Click **Save**.
+6. Wait 30 seconds — your live app will be published at:  
+   `https://shirazinator.github.io/expense-voucher-manager/`
