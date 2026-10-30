@@ -44,15 +44,28 @@
     }
     .apple-card {
       background: #FFFFFF;
-      border: 1px solid rgba(226, 232, 240, 0.85);
-      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
+      border: 1.5px solid #CBD5E1;
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
     }
     .apple-card-hover {
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .apple-card-hover:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.08);
+      border-color: #94A3B8;
+      box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.09);
+    }
+    .card-advance {
+      border: 1.5px solid #C7D2FE !important;
+    }
+    .card-advance:hover {
+      border-color: #818CF8 !important;
+    }
+    .card-expense {
+      border: 1.5px solid #BAE6FD !important;
+    }
+    .card-expense:hover {
+      border-color: #38BDF8 !important;
     }
     .apple-btn-active:active {
       transform: scale(0.97);
@@ -114,19 +127,19 @@
       </div>
 
       <!-- Clean Action Pills (Never overflows) -->
-      <div class="flex flex-wrap items-center gap-1.5 pt-2 sm:pt-0 shrink-0 border-t sm:border-t-0 border-slate-100">
-        <button onclick="forceRefreshApp()" class="px-2.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold flex items-center gap-1.5 transition text-[11px]">
+      <div class="flex flex-wrap items-center gap-1.5 pt-2 sm:pt-0 shrink-0 border-t sm:border-t-0 border-slate-200">
+        <button onclick="forceRefreshApp()" class="px-2.5 py-1.5 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 font-semibold flex items-center gap-1.5 transition text-[11px] shadow-2xs">
           <i class="fa-solid fa-rotate text-blue-600"></i> Refresh App
         </button>
-        <button onclick="backupData()" class="px-2.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold flex items-center gap-1.5 transition text-[11px]" title="Download offline JSON backup">
+        <button onclick="backupData()" class="px-2.5 py-1.5 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 font-semibold flex items-center gap-1.5 transition text-[11px] shadow-2xs" title="Download offline JSON backup">
           <i class="fa-solid fa-download text-indigo-600"></i> Backup
         </button>
-        <label class="px-2.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold flex items-center gap-1.5 cursor-pointer transition text-[11px]" title="Restore offline JSON backup">
+        <label class="px-2.5 py-1.5 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 font-semibold flex items-center gap-1.5 cursor-pointer transition text-[11px] shadow-2xs" title="Restore offline JSON backup">
           <i class="fa-solid fa-upload text-emerald-600"></i> Restore
           <input type="file" accept=".json" class="hidden" onchange="restoreData(event)">
         </label>
-        <button onclick="clearAllData()" class="px-2.5 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold flex items-center gap-1.5 transition text-[11px]" title="Clear local device data">
-          <i class="fa-regular fa-trash-can"></i> Clear All
+        <button onclick="clearAllData()" class="px-2.5 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 border border-rose-300 text-rose-700 font-semibold flex items-center gap-1.5 transition text-[11px] shadow-2xs" title="Clear local device data">
+          <i class="fa-regular fa-trash-can text-rose-600"></i> Clear All
         </button>
       </div>
     </div>
@@ -135,7 +148,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
       
       <!-- Card 1: Company Advance Received -->
-      <div class="apple-card apple-card-hover rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between">
+      <div class="apple-card card-advance apple-card-hover rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between">
         <div class="flex items-center justify-between">
           <div class="text-[11px] font-bold text-indigo-700 uppercase tracking-wider flex items-center gap-2">
             <span class="w-6 h-6 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600">
@@ -158,7 +171,7 @@
       </div>
 
       <!-- Card 2: Total Expenses Spent -->
-      <div class="apple-card apple-card-hover rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between">
+      <div class="apple-card card-expense apple-card-hover rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between">
         <div class="flex items-center justify-between">
           <div class="text-[11px] font-bold text-blue-700 uppercase tracking-wider flex items-center gap-2">
             <span class="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
@@ -181,7 +194,7 @@
       </div>
 
       <!-- Card 3: Net Settlement Status (Dynamic calculation) -->
-      <div id="settlementCard" class="rounded-3xl p-5 shadow-sm text-white flex flex-col justify-between transition-all duration-200">
+      <div id="settlementCard" class="rounded-3xl p-5 shadow-sm text-white flex flex-col justify-between transition-all duration-200 border border-white/25 ring-1 ring-white/20">
         <div class="flex items-center justify-between">
           <div class="text-[11px] font-bold uppercase tracking-wider flex items-center gap-2" id="settlementBadgeTitle">
             <span class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-white">
@@ -228,15 +241,15 @@
       <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-1">
         <div>
           <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">From Date (Trip Start)</label>
-          <input type="date" id="filterStartDate" onchange="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition">
+          <input type="date" id="filterStartDate" onchange="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50/70 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition">
         </div>
         <div>
           <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">To Date (Trip End)</label>
-          <input type="date" id="filterEndDate" onchange="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition">
+          <input type="date" id="filterEndDate" onchange="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50/70 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition">
         </div>
         <div>
           <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Category</label>
-          <select id="filterCategory" onchange="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition">
+          <select id="filterCategory" onchange="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50/70 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition">
             <option value="all">All Categories</option>
             <option value="Food">Food & Beverage</option>
             <option value="Travel">Travel / Uber</option>
@@ -251,9 +264,9 @@
         <div class="flex items-end gap-2">
           <div class="w-full">
             <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Search</label>
-            <input type="text" id="filterSearch" placeholder="Item, note, vendor..." oninput="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition">
+            <input type="text" id="filterSearch" placeholder="Item, note, vendor..." oninput="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50/70 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition">
           </div>
-          <button onclick="resetFilter()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs shrink-0 transition" title="Reset filter">
+          <button onclick="resetFilter()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-600 rounded-xl text-xs shrink-0 transition" title="Reset filter">
             <i class="fa-solid fa-rotate-left"></i>
           </button>
         </div>
@@ -288,13 +301,13 @@
 
     <!-- NATIVE macOS SEGMENTED CONTROL TABS -->
     <div class="flex items-center justify-between pt-1">
-      <div class="bg-slate-200/70 p-1 rounded-2xl flex max-w-sm sm:max-w-md w-full">
-        <button id="tabBtnExpenses" onclick="switchTab('expenses')" class="flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition shadow-xs bg-white text-slate-900 flex items-center justify-center gap-1.5">
+      <div class="bg-slate-200/80 border border-slate-300/90 p-1 rounded-2xl flex max-w-sm sm:max-w-md w-full shadow-2xs">
+        <button id="tabBtnExpenses" onclick="switchTab('expenses')" class="flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition shadow-xs bg-white text-slate-900 border border-slate-300/80 flex items-center justify-center gap-1.5">
           <i class="fa-solid fa-receipt text-blue-600"></i>
           <span>Expenses</span>
           <span id="tabCountExpenses" class="bg-blue-50 text-blue-700 text-[11px] px-1.5 py-0.5 rounded-full font-bold">0</span>
         </button>
-        <button id="tabBtnFunds" onclick="switchTab('funds')" class="flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5">
+        <button id="tabBtnFunds" onclick="switchTab('funds')" class="flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 border border-transparent">
           <i class="fa-solid fa-hand-holding-dollar text-indigo-600"></i>
           <span>Advances</span>
           <span id="tabCountFunds" class="bg-slate-100 text-slate-600 text-[11px] px-1.5 py-0.5 rounded-full font-bold">0</span>
@@ -312,7 +325,7 @@
         <!-- Desktop Table -->
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs sm:text-sm hidden md:table">
-            <thead class="bg-slate-50 text-slate-500 uppercase text-[11px] font-bold tracking-wider border-b border-slate-100">
+            <thead class="bg-slate-50 text-slate-600 uppercase text-[11px] font-bold tracking-wider border-b border-slate-200">
               <tr>
                 <th class="px-4 py-3 w-12 text-center">#</th>
                 <th class="px-4 py-3 w-28">Date</th>
@@ -324,11 +337,11 @@
                 <th class="px-4 py-3 w-16 text-center">Action</th>
               </tr>
             </thead>
-            <tbody id="expensesTableBody" class="divide-y divide-slate-100"></tbody>
+            <tbody id="expensesTableBody" class="divide-y divide-slate-200"></tbody>
           </table>
 
           <!-- Mobile Card List View -->
-          <div id="expensesMobileList" class="divide-y divide-slate-100 md:hidden"></div>
+          <div id="expensesMobileList" class="divide-y divide-slate-200 md:hidden"></div>
         </div>
 
         <!-- Empty state -->
@@ -353,7 +366,7 @@
     <!-- VIEW 2: COMPANY ADVANCES / FUNDS TABLE / CARDS -->
     <div id="viewFunds" class="hidden space-y-4">
       <div class="apple-card rounded-2xl overflow-hidden">
-        <div class="px-4 py-3 bg-indigo-50/40 border-b border-indigo-100/60 flex justify-between items-center">
+        <div class="px-4 py-3 bg-indigo-50/50 border-b border-indigo-200/80 flex justify-between items-center">
           <div class="font-bold text-sm text-indigo-950 flex items-center gap-2">
             <i class="fa-solid fa-hand-holding-dollar text-indigo-600"></i>
             <span>Company Advances & Project Funds Received</span>
@@ -366,7 +379,7 @@
         <!-- Desktop Table -->
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs sm:text-sm hidden md:table">
-            <thead class="bg-slate-50 text-slate-500 uppercase text-[11px] font-bold tracking-wider border-b border-slate-100">
+            <thead class="bg-slate-50 text-slate-600 uppercase text-[11px] font-bold tracking-wider border-b border-slate-200">
               <tr>
                 <th class="px-4 py-3 w-12 text-center">#</th>
                 <th class="px-4 py-3 w-28">Date Received</th>
@@ -377,11 +390,11 @@
                 <th class="px-4 py-3 w-16 text-center">Action</th>
               </tr>
             </thead>
-            <tbody id="fundsTableBody" class="divide-y divide-slate-100"></tbody>
+            <tbody id="fundsTableBody" class="divide-y divide-slate-200"></tbody>
           </table>
 
           <!-- Mobile Cards -->
-          <div id="fundsMobileList" class="divide-y divide-slate-100 md:hidden"></div>
+          <div id="fundsMobileList" class="divide-y divide-slate-200 md:hidden"></div>
         </div>
 
         <!-- Empty state for Funds -->
@@ -712,13 +725,13 @@
       const viewFnd = document.getElementById('viewFunds');
 
       if (tab === 'expenses') {
-        tabExp.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition shadow-xs bg-white text-slate-900 flex items-center justify-center gap-1.5";
-        tabFnd.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5";
+        tabExp.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition shadow-xs bg-white text-slate-900 border border-slate-300/80 flex items-center justify-center gap-1.5";
+        tabFnd.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 border border-transparent";
         viewExp.classList.remove('hidden');
         viewFnd.classList.add('hidden');
       } else {
-        tabExp.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5";
-        tabFnd.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition shadow-xs bg-white text-slate-900 flex items-center justify-center gap-1.5";
+        tabExp.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 border border-transparent";
+        tabFnd.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition shadow-xs bg-white text-slate-900 border border-slate-300/80 flex items-center justify-center gap-1.5";
         viewExp.classList.add('hidden');
         viewFnd.classList.remove('hidden');
       }
@@ -993,7 +1006,7 @@
         const url = URL.createObjectURL(item.blob);
         return `
           <img src="${url}" alt="${type}" onclick="openLightbox('${url}', '${type} ${idx+1}: ${item.name || ''}')" 
-               class="w-7 h-7 rounded-lg border border-slate-200 object-cover cursor-pointer hover:scale-110 transition shadow-2xs">
+               class="w-7 h-7 rounded-lg border border-slate-300 object-cover cursor-pointer hover:scale-110 transition shadow-2xs">
         `;
       }).join('');
     }
