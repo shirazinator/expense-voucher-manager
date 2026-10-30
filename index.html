@@ -82,6 +82,10 @@
         <span><b>Device Sandbox Storage:</b> All expenses, company advances, bank proofs, and softcopy bills are saved <b>strictly in your device's browser</b>. Zero server data leakage.</span>
       </div>
       <div class="flex items-center gap-3 shrink-0 text-slate-700">
+        <button onclick="forceRefreshApp()" class="font-bold underline text-blue-600 hover:text-blue-800 flex items-center gap-1" title="Check and load latest app update">
+          <i class="fa-solid fa-arrows-rotate"></i> Refresh App
+        </button>
+        <span class="text-slate-300">|</span>
         <button onclick="backupData()" class="font-bold underline hover:text-blue-700 flex items-center gap-1" title="Download private backup JSON">
           <i class="fa-solid fa-download"></i> Backup
         </button>
@@ -620,11 +624,37 @@
     let pendingBills = [];    // Array of { name, blob, mimeType }
     let pendingFundProofs = []; // Array of { name, blob, mimeType }
 
-    // Register Service Worker for PWA
+    // Register Service Worker for PWA with auto-update
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed', err));
+        navigator.serviceWorker.register('./sw.js?v=2').then((reg) => {
+          reg.update();
+          reg.onupdatefound = () => {
+            const installing = reg.installing;
+            installing.onstatechange = () => {
+              if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('New update available, auto-reloading...');
+                window.location.reload();
+              }
+            };
+          };
+        }).catch(err => console.log('SW registration failed', err));
       });
+    }
+
+    async function forceRefreshApp() {
+      showToast("Updating app to latest version...");
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        for (let r of regs) await r.unregister();
+      }
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        for (let k of keys) await caches.delete(k);
+      }
+      setTimeout(() => {
+        window.location.reload(true);
+      }, 500);
     }
 
     // On Load
