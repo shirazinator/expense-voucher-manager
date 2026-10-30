@@ -76,40 +76,53 @@
 
   <!-- TOP NAVIGATION BAR (macOS / iOS Native Style) -->
   <header class="apple-glass text-white sticky top-0 z-40 border-b border-white/10 shadow-sm">
-    <div class="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex justify-between items-center gap-2 sm:gap-3">
+    <div class="max-w-6xl mx-auto px-4 py-3 sm:py-3.5">
       
-      <!-- Brand & Developer Credit (flex-1 min-w-0 ensures buttons are never pushed) -->
-      <div class="flex items-center gap-2 sm:gap-2.5 flex-1 min-w-0 overflow-hidden">
-        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 flex items-center justify-center shadow-md border border-white/20 shrink-0">
-          <i class="fa-solid fa-wallet text-white text-xs sm:text-base"></i>
-        </div>
-        <div class="min-w-0 flex-1">
-          <div class="flex items-center gap-1.5 sm:gap-2">
-            <h1 class="text-xs sm:text-base font-bold tracking-tight text-white leading-tight truncate">
-              <span class="sm:hidden">Expense Manager</span>
-              <span class="hidden sm:inline">Expense & Advance Manager</span>
-            </h1>
-            <span class="text-[10px] bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full font-mono font-medium hidden md:inline-block shrink-0">100% Private</span>
+      <!-- Top Row: Brand & Developer Credit (Full width on mobile, inline on desktop) -->
+      <div class="flex items-center justify-between gap-3">
+        
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 flex items-center justify-center shadow-md border border-white/20 shrink-0">
+            <i class="fa-solid fa-wallet text-white text-base"></i>
           </div>
-          <p class="text-[10px] sm:text-[11px] text-zinc-400 mt-0.5 flex items-center gap-1.5 font-medium truncate">
-            <span>Crafted by <b class="text-blue-300 font-semibold">Shiraz</b></span>
-            <span class="text-zinc-600 hidden sm:inline">•</span>
-            <span class="text-emerald-400 hidden sm:inline-flex items-center gap-1">
-              <i class="fa-solid fa-shield-halved text-[9px]"></i> Device Sandbox
-            </span>
-          </p>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2">
+              <h1 class="text-sm sm:text-base font-bold tracking-tight text-white leading-tight">Expense & Advance Manager</h1>
+              <span class="text-[10px] bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full font-mono font-medium hidden sm:inline-block">100% Private</span>
+            </div>
+            <p class="text-xs text-zinc-400 mt-1 flex items-center gap-1.5 font-medium">
+              <span>Crafted by <b class="text-blue-300 font-semibold">Shiraz</b></span>
+              <span class="text-zinc-600">•</span>
+              <span class="text-emerald-400 flex items-center gap-1">
+                <i class="fa-solid fa-shield-halved text-[9px]"></i> Device Sandbox
+              </span>
+            </p>
+          </div>
         </div>
+
+        <!-- Desktop Action Buttons (hidden on phone, visible on sm and above) -->
+        <div class="hidden sm:flex items-center gap-2 shrink-0">
+          <button onclick="openAddFundModal()" class="apple-btn-active bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs sm:text-sm px-4 py-2 rounded-full shadow-sm transition flex items-center gap-1.5 whitespace-nowrap">
+            <i class="fa-solid fa-plus text-xs"></i>
+            <span>Advance</span>
+          </button>
+          <button onclick="openAddModal()" class="apple-btn-active bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-xs sm:text-sm px-4 py-2 rounded-full shadow-sm transition flex items-center gap-1.5 whitespace-nowrap">
+            <i class="fa-solid fa-plus text-xs"></i>
+            <span>Expense</span>
+          </button>
+        </div>
+
       </div>
 
-      <!-- Action Buttons (Responsive, Shrink-0, Guaranteed 100% inside frame on all phones) -->
-      <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-        <button onclick="openAddFundModal()" class="apple-btn-active bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-[11px] sm:text-xs px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full shadow-sm transition flex items-center gap-1 sm:gap-1.5 shrink-0 whitespace-nowrap">
-          <i class="fa-solid fa-plus text-[10px]"></i>
-          <span>Advance</span>
+      <!-- Mobile Action Row (Visible only on phones < 640px: Big, comfortable, native iOS feel) -->
+      <div class="grid grid-cols-2 gap-2.5 mt-2.5 sm:hidden">
+        <button onclick="openAddFundModal()" class="apple-btn-active bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs py-2 px-3 rounded-xl shadow-xs flex items-center justify-center gap-1.5 transition">
+          <i class="fa-solid fa-hand-holding-dollar text-xs"></i>
+          <span>+ Advance</span>
         </button>
-        <button onclick="openAddModal()" class="apple-btn-active bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-[11px] sm:text-xs px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full shadow-sm transition flex items-center gap-1 sm:gap-1.5 shrink-0 whitespace-nowrap">
-          <i class="fa-solid fa-plus text-[10px]"></i>
-          <span>Expense</span>
+        <button onclick="openAddModal()" class="apple-btn-active bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-xs py-2 px-3 rounded-xl shadow-xs flex items-center justify-center gap-1.5 transition">
+          <i class="fa-solid fa-receipt text-xs"></i>
+          <span>+ Expense</span>
         </button>
       </div>
 
