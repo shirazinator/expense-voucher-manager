@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Expense Manager">
-  <meta name="theme-color" content="#0F172A">
+  <meta name="apple-mobile-web-app-title" content="Expenses">
+  <meta name="theme-color" content="#18181B">
   <link rel="manifest" href="manifest.json">
   <title>Expense Voucher & Fund Manager — by Shiraz</title>
 
@@ -28,46 +28,72 @@
   <script src="excel-export.js"></script>
 
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    .glass-nav { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px); }
+    :root {
+      --app-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      font-family: var(--app-font);
+      background-color: #F8FAFC;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .apple-glass {
+      background: rgba(24, 24, 27, 0.92);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+    }
+    .apple-card {
+      background: #FFFFFF;
+      border: 1px solid rgba(226, 232, 240, 0.85);
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
+    }
+    .apple-card-hover {
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .apple-card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.08);
+    }
+    .apple-btn-active:active {
+      transform: scale(0.97);
+    }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen pb-24">
+<body class="min-h-screen text-slate-800 pb-28">
 
-  <!-- TOP NAVIGATION BAR -->
-  <header class="glass-nav text-white shadow-lg sticky top-0 z-40 border-b border-slate-800">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
+  <!-- TOP NAVIGATION BAR (macOS / iOS Native Style) -->
+  <header class="apple-glass text-white sticky top-0 z-40 border-b border-white/10 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center gap-3">
       
       <!-- Brand & Developer Credit -->
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-inner border border-blue-400/30">
-          <i class="fa-solid fa-wallet text-white text-lg"></i>
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 flex items-center justify-center shadow-md border border-white/20">
+          <i class="fa-solid fa-wallet text-white text-base"></i>
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <h1 class="text-base sm:text-lg font-black tracking-tight leading-tight">Expense & Advance Manager</h1>
-            <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full font-mono hidden sm:inline-block">100% Private</span>
+            <h1 class="text-sm sm:text-base font-bold tracking-tight text-white leading-none">Expense & Advance Manager</h1>
+            <span class="text-[10px] bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full font-mono font-medium hidden sm:inline-block">100% Private</span>
           </div>
-          <p class="text-xs text-slate-400 flex items-center gap-1.5">
-            <span>Crafted by <b class="text-blue-300">Shiraz</b></span>
-            <span>•</span>
-            <span class="text-emerald-400"><i class="fa-solid fa-shield-halved text-[10px] mr-1"></i>Device Sandbox</span>
+          <p class="text-[11px] text-zinc-400 mt-1 flex items-center gap-1.5 font-medium">
+            <span>Crafted by <b class="text-blue-300 font-semibold">Shiraz</b></span>
+            <span class="text-zinc-600">•</span>
+            <span class="text-emerald-400 flex items-center gap-1">
+              <i class="fa-solid fa-shield-halved text-[9px]"></i> Device Sandbox
+            </span>
           </p>
         </div>
       </div>
 
       <!-- Action Buttons -->
       <div class="flex items-center gap-2">
-        <button onclick="forceRefreshApp()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition shrink-0" title="Refresh & load latest app version">
-          <i class="fa-solid fa-arrows-rotate text-xs"></i>
+        <button onclick="openAddFundModal()" class="apple-btn-active bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-full shadow-sm transition flex items-center gap-1.5">
+          <i class="fa-solid fa-plus text-[11px]"></i>
+          <span>Advance</span>
         </button>
-        <button onclick="openAddFundModal()" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-xs sm:text-sm px-3 sm:px-3.5 py-2 rounded-xl shadow-md transition flex items-center gap-1.5 shrink-0">
-          <i class="fa-solid fa-hand-holding-dollar"></i>
-          <span>+ Advance</span>
-        </button>
-        <button onclick="openAddModal()" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-bold text-xs sm:text-sm px-3.5 sm:px-4 py-2 rounded-xl shadow-md transition flex items-center gap-1.5 shrink-0">
-          <i class="fa-solid fa-receipt"></i>
-          <span>+ Expense</span>
+        <button onclick="openAddModal()" class="apple-btn-active bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-xs sm:text-sm px-4 py-2 rounded-full shadow-sm transition flex items-center gap-1.5">
+          <i class="fa-solid fa-plus text-[11px]"></i>
+          <span>Expense</span>
         </button>
       </div>
 
@@ -76,131 +102,141 @@
 
   <main class="max-w-6xl mx-auto px-4 py-5 space-y-5">
 
-    <!-- PRIVACY & DATA BACKUP BANNER (Fully Responsive for Mobile) -->
-    <div class="bg-white border border-slate-200 rounded-2xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-600 shadow-xs">
+    <!-- PRIVACY & DATA MANAGEMENT BANNER -->
+    <div class="apple-card rounded-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-600">
       <div class="flex items-center gap-2.5 min-w-0">
-        <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-          <i class="fa-solid fa-shield-check"></i>
+        <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
+          <i class="fa-solid fa-shield-check text-sm"></i>
         </div>
-        <p class="leading-relaxed"><b>Device Sandbox Storage:</b> All expenses and advances are saved <b>locally in your browser</b>. Zero server data leakage.</p>
+        <p class="leading-relaxed">
+          <b class="text-slate-800">Private Device Sandbox:</b> All expenses, advances, and receipts are stored <b>exclusively on your device</b>. Zero cloud data leaks.
+        </p>
       </div>
-      <div class="flex flex-wrap items-center gap-2 pt-2 sm:pt-0 shrink-0 border-t sm:border-t-0 border-slate-100">
-        <button onclick="forceRefreshApp()" class="px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold flex items-center gap-1.5 transition text-[11px]">
-          <i class="fa-solid fa-arrows-rotate"></i> Refresh App
+
+      <!-- Clean Action Pills (Never overflows) -->
+      <div class="flex flex-wrap items-center gap-1.5 pt-2 sm:pt-0 shrink-0 border-t sm:border-t-0 border-slate-100">
+        <button onclick="forceRefreshApp()" class="px-2.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold flex items-center gap-1.5 transition text-[11px]">
+          <i class="fa-solid fa-rotate text-blue-600"></i> Refresh App
         </button>
-        <button onclick="backupData()" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold flex items-center gap-1.5 transition text-[11px]" title="Download private backup JSON">
-          <i class="fa-solid fa-download text-blue-600"></i> Backup
+        <button onclick="backupData()" class="px-2.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold flex items-center gap-1.5 transition text-[11px]" title="Download offline JSON backup">
+          <i class="fa-solid fa-download text-indigo-600"></i> Backup
         </button>
-        <label class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold flex items-center gap-1.5 cursor-pointer transition text-[11px]" title="Restore from backup JSON">
+        <label class="px-2.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold flex items-center gap-1.5 cursor-pointer transition text-[11px]" title="Restore offline JSON backup">
           <i class="fa-solid fa-upload text-emerald-600"></i> Restore
           <input type="file" accept=".json" class="hidden" onchange="restoreData(event)">
         </label>
-        <button onclick="clearAllData()" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold flex items-center gap-1.5 transition text-[11px]" title="Wipe local storage">
+        <button onclick="clearAllData()" class="px-2.5 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold flex items-center gap-1.5 transition text-[11px]" title="Clear local device data">
           <i class="fa-regular fa-trash-can"></i> Clear All
         </button>
       </div>
     </div>
 
-    <!-- HERO FINANCIAL SETTLEMENT DASHBOARD (Company Advance vs Expenses) -->
+    <!-- HERO FINANCIAL SETTLEMENT DASHBOARD (Apple Card / Apple Wallet Aesthetic) -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
       
-      <!-- Card 1: Company Advances Received -->
-      <div class="bg-gradient-to-br from-indigo-50 to-blue-50/60 border border-indigo-200 rounded-2xl p-4 shadow-xs relative overflow-hidden flex flex-col justify-between">
+      <!-- Card 1: Company Advance Received -->
+      <div class="apple-card apple-card-hover rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between">
         <div class="flex items-center justify-between">
-          <div class="text-xs font-bold text-indigo-900 uppercase tracking-wider flex items-center gap-1.5">
-            <i class="fa-solid fa-hand-holding-dollar text-indigo-600 text-sm"></i>
-            <span>Company Advance Received</span>
+          <div class="text-[11px] font-bold text-indigo-700 uppercase tracking-wider flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600">
+              <i class="fa-solid fa-hand-holding-dollar text-[11px]"></i>
+            </span>
+            <span>Company Advance</span>
           </div>
-          <button onclick="switchTab('funds')" class="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 underline">
-            View Advances
+          <button onclick="switchTab('funds')" class="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 transition">
+            View Advances →
           </button>
         </div>
-        <div class="py-2">
-          <div id="statTotalAdvance" class="text-2xl sm:text-3xl font-black text-indigo-950">₹ 0.00</div>
-          <div id="statAdvanceCount" class="text-xs font-semibold text-indigo-700 mt-0.5">0 Advances recorded</div>
+        <div class="py-3">
+          <div id="statTotalAdvance" class="text-3xl font-extrabold tracking-tight text-slate-900">₹ 0.00</div>
+          <div id="statAdvanceCount" class="text-xs font-medium text-slate-500 mt-1">0 Advances recorded</div>
         </div>
-        <div class="pt-1 flex items-center justify-between text-[11px] text-indigo-600 border-t border-indigo-100">
-          <span>Funds received for project/tour</span>
-          <button onclick="openAddFundModal()" class="font-bold underline">+ Add Fund</button>
+        <div class="pt-2 flex items-center justify-between text-[11px] text-slate-500 border-t border-slate-100">
+          <span>Project tour advance</span>
+          <button onclick="openAddFundModal()" class="font-bold text-indigo-600 hover:underline">+ Add Advance</button>
         </div>
       </div>
 
-      <!-- Card 2: Total Expenses Claimed -->
-      <div class="bg-gradient-to-br from-blue-50 to-slate-50 border border-blue-200 rounded-2xl p-4 shadow-xs relative overflow-hidden flex flex-col justify-between">
+      <!-- Card 2: Total Expenses Spent -->
+      <div class="apple-card apple-card-hover rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between">
         <div class="flex items-center justify-between">
-          <div class="text-xs font-bold text-blue-900 uppercase tracking-wider flex items-center gap-1.5">
-            <i class="fa-solid fa-receipt text-blue-600 text-sm"></i>
+          <div class="text-[11px] font-bold text-blue-700 uppercase tracking-wider flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+              <i class="fa-solid fa-receipt text-[11px]"></i>
+            </span>
             <span>Total Expenses Spent</span>
           </div>
-          <button onclick="switchTab('expenses')" class="text-[11px] font-bold text-blue-600 hover:text-blue-800 underline">
-            View Expenses
+          <button onclick="switchTab('expenses')" class="text-[11px] font-bold text-blue-600 hover:text-blue-800 transition">
+            View Expenses →
           </button>
         </div>
-        <div class="py-2">
-          <div id="statTotalAmount" class="text-2xl sm:text-3xl font-black text-slate-900">₹ 0.00</div>
-          <div id="statTotalCount" class="text-xs font-semibold text-blue-700 mt-0.5">0 Vouchers in filtered cycle</div>
+        <div class="py-3">
+          <div id="statTotalAmount" class="text-3xl font-extrabold tracking-tight text-slate-900">₹ 0.00</div>
+          <div id="statTotalCount" class="text-xs font-medium text-slate-500 mt-1">0 Vouchers in filtered cycle</div>
         </div>
-        <div class="pt-1 flex items-center justify-between text-[11px] text-slate-500 border-t border-blue-100">
-          <span><span id="statBillsCount">0</span> with bills • <span id="statNoBillCount">0</span> no bill</span>
-          <button onclick="openAddModal()" class="font-bold text-blue-700 underline">+ Add Expense</button>
+        <div class="pt-2 flex items-center justify-between text-[11px] text-slate-500 border-t border-slate-100">
+          <span><b id="statBillsCount" class="text-slate-700">0</b> with bills • <b id="statNoBillCount" class="text-slate-700">0</b> no bill</span>
+          <button onclick="openAddModal()" class="font-bold text-blue-600 hover:underline">+ Add Expense</button>
         </div>
       </div>
 
       <!-- Card 3: Net Settlement Status (Dynamic calculation) -->
-      <div id="settlementCard" class="bg-gradient-to-br from-emerald-500 to-teal-700 text-white rounded-2xl p-4 shadow-md flex flex-col justify-between">
+      <div id="settlementCard" class="rounded-3xl p-5 shadow-sm text-white flex flex-col justify-between transition-all duration-200">
         <div class="flex items-center justify-between">
-          <div class="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5" id="settlementBadgeTitle">
-            <i class="fa-solid fa-scale-balanced text-emerald-200 text-sm"></i>
-            <span id="settlementStatusLabel">Reimbursement Due</span>
+          <div class="text-[11px] font-bold uppercase tracking-wider flex items-center gap-2" id="settlementBadgeTitle">
+            <span class="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-white">
+              <i class="fa-solid fa-scale-balanced text-[11px]"></i>
+            </span>
+            <span id="settlementStatusLabel">Settlement Balance</span>
           </div>
-          <span id="settlementPill" class="text-[10px] font-bold bg-white/20 text-white px-2 py-0.5 rounded-full backdrop-blur-xs">
-            Payable by Company
+          <span id="settlementPill" class="text-[10px] font-bold bg-white/20 px-2.5 py-0.5 rounded-full backdrop-blur-md">
+            Payable
           </span>
         </div>
-        <div class="py-2">
-          <div id="statSettlementAmount" class="text-2xl sm:text-3xl font-black text-white">₹ 0.00</div>
-          <div id="statSettlementSub" class="text-xs text-emerald-100 mt-0.5 font-medium">Out-of-pocket expenses beyond advance</div>
+        <div class="py-3">
+          <div id="statSettlementAmount" class="text-3xl font-black tracking-tight text-white">₹ 0.00</div>
+          <div id="statSettlementSub" class="text-xs text-white/80 mt-1 font-medium">Reconciliation of advance and expenses</div>
         </div>
-        <div class="pt-1 text-[11px] text-white/90 border-t border-white/20 flex items-center justify-between">
+        <div class="pt-2 text-[11px] text-white/90 border-t border-white/20 flex items-center justify-between">
           <span id="settlementFootNote">Company owes this balance</span>
-          <button onclick="triggerExport('pdf')" class="font-bold underline text-white hover:text-emerald-100">Export Claim</button>
+          <button onclick="triggerExport('pdf')" class="font-bold underline text-white hover:text-white/80">Export Claim</button>
         </div>
       </div>
 
     </div>
 
-    <!-- DATE & TRIP FILTER (Clarified & User-Friendly) -->
-    <div class="bg-white rounded-2xl p-4 shadow-xs border border-slate-200 space-y-3">
+    <!-- TRIP & DATE FILTER (macOS Settings / Control Center Aesthetic) -->
+    <div class="apple-card rounded-2xl p-4 sm:p-5 space-y-3.5">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
           <div class="flex items-center gap-2">
-            <i class="fa-regular fa-calendar-days text-blue-600 text-base"></i>
-            <span class="text-sm font-bold text-slate-800">Filter by Trip or Billing Cycle</span>
+            <i class="fa-regular fa-calendar-days text-blue-600 text-sm"></i>
+            <h2 class="text-sm font-bold text-slate-800">Filter by Trip or Billing Cycle</h2>
           </div>
-          <p class="text-xs text-slate-500">Select dates to view or export expenses for a specific project tour or month.</p>
+          <p class="text-xs text-slate-500 mt-0.5">Filter expenses for a specific project tour or month. PDF and Excel exports reflect this range.</p>
         </div>
         
-        <!-- Quick Preset Buttons -->
-        <div class="flex flex-wrap gap-1.5 text-xs">
-          <button onclick="setCyclePreset('all')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold transition">All Records</button>
-          <button onclick="setCyclePreset('oct')" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold transition">Oct Tour (6-18)</button>
-          <button onclick="setCyclePreset('this_month')" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold transition">This Month</button>
-          <button onclick="setCyclePreset('last_30')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold transition">Last 30 Days</button>
+        <!-- Segmented Preset Pills -->
+        <div class="bg-slate-100 p-1 rounded-xl flex flex-wrap gap-1 text-xs">
+          <button onclick="setCyclePreset('all')" class="px-3 py-1 rounded-lg hover:bg-white text-slate-700 font-semibold transition">All Records</button>
+          <button onclick="setCyclePreset('oct')" class="px-3 py-1 rounded-lg hover:bg-white text-blue-700 font-semibold transition">Oct Tour (6-18)</button>
+          <button onclick="setCyclePreset('this_month')" class="px-3 py-1 rounded-lg hover:bg-white text-slate-700 font-semibold transition">This Month</button>
+          <button onclick="setCyclePreset('last_30')" class="px-3 py-1 rounded-lg hover:bg-white text-slate-700 font-semibold transition">Last 30 Days</button>
         </div>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-1">
         <div>
-          <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase tracking-wider">From Date (Trip Start)</label>
-          <input type="date" id="filterStartDate" onchange="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+          <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">From Date (Trip Start)</label>
+          <input type="date" id="filterStartDate" onchange="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition">
         </div>
         <div>
-          <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase tracking-wider">To Date (Trip End)</label>
-          <input type="date" id="filterEndDate" onchange="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+          <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">To Date (Trip End)</label>
+          <input type="date" id="filterEndDate" onchange="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition">
         </div>
         <div>
-          <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Category</label>
-          <select id="filterCategory" onchange="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+          <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Category</label>
+          <select id="filterCategory" onchange="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition">
             <option value="all">All Categories</option>
             <option value="Food">Food & Beverage</option>
             <option value="Travel">Travel / Uber</option>
@@ -214,73 +250,69 @@
         </div>
         <div class="flex items-end gap-2">
           <div class="w-full">
-            <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Search</label>
-            <input type="text" id="filterSearch" placeholder="Item, note, vendor..." oninput="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+            <label class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Search</label>
+            <input type="text" id="filterSearch" placeholder="Item, note, vendor..." oninput="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition">
           </div>
-          <button onclick="resetFilter()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs shrink-0" title="Reset filter">
+          <button onclick="resetFilter()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs shrink-0 transition" title="Reset filter">
             <i class="fa-solid fa-rotate-left"></i>
           </button>
         </div>
       </div>
     </div>
 
-    <!-- EXPORT ACTION BAR -->
-    <div class="flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-slate-900 to-blue-950 text-white rounded-2xl p-4 shadow-md">
+    <!-- OFFICIAL EXPORTS TOOLBAR -->
+    <div class="apple-card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-slate-900 to-zinc-900 text-white">
       <div>
-        <div class="font-bold text-sm sm:text-base flex items-center gap-2">
+        <div class="font-bold text-sm sm:text-base flex items-center gap-2 text-white">
           <i class="fa-solid fa-cloud-arrow-down text-emerald-400"></i>
           <span>Official Reports & Audit Export</span>
         </div>
-        <p class="text-xs text-slate-300">Generates 1-page-per-voucher audit PDF with company advance reconciliation</p>
+        <p class="text-xs text-zinc-400 mt-0.5">Generates 1-page-per-voucher audit PDF with company advance reconciliation</p>
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
-        <button id="btnExportPDF" onclick="triggerExport('pdf')" class="bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-xl shadow transition flex items-center gap-2">
+        <button id="btnExportPDF" onclick="triggerExport('pdf')" class="apple-btn-active bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-xl shadow-sm transition flex items-center gap-2">
           <i class="fa-solid fa-file-pdf"></i>
           <span>PDF Vouchers</span>
         </button>
-        <button id="btnExportExcel" onclick="triggerExport('excel')" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-xl shadow transition flex items-center gap-2">
+        <button id="btnExportExcel" onclick="triggerExport('excel')" class="apple-btn-active bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-xl shadow-sm transition flex items-center gap-2">
           <i class="fa-solid fa-file-excel"></i>
           <span>Excel Sheet</span>
         </button>
-        <button id="btnExportZip" onclick="triggerExport('zip')" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-xl shadow transition flex items-center gap-2">
+        <button id="btnExportZip" onclick="triggerExport('zip')" class="apple-btn-active bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-xl shadow-sm transition flex items-center gap-2">
           <i class="fa-solid fa-file-zipper"></i>
           <span>Full Bundle (ZIP)</span>
         </button>
       </div>
     </div>
 
-    <!-- TABS: EXPENSES vs COMPANY ADVANCES -->
-    <div class="flex items-center gap-2 border-b border-slate-300 pb-1">
-      <button id="tabBtnExpenses" onclick="switchTab('expenses')" class="px-4 py-2 font-bold text-sm border-b-2 border-blue-600 text-blue-700 flex items-center gap-2 transition">
-        <i class="fa-solid fa-receipt"></i>
-        <span>Expenses & Bills</span>
-        <span id="tabCountExpenses" class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full font-extrabold">0</span>
-      </button>
-      <button id="tabBtnFunds" onclick="switchTab('funds')" class="px-4 py-2 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 transition">
-        <i class="fa-solid fa-hand-holding-dollar"></i>
-        <span>Company Advances / Funds</span>
-        <span id="tabCountFunds" class="bg-slate-200 text-slate-700 text-xs px-2 py-0.5 rounded-full font-extrabold">0</span>
-      </button>
+    <!-- NATIVE macOS SEGMENTED CONTROL TABS -->
+    <div class="flex items-center justify-between pt-1">
+      <div class="bg-slate-200/70 p-1 rounded-2xl flex max-w-sm sm:max-w-md w-full">
+        <button id="tabBtnExpenses" onclick="switchTab('expenses')" class="flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition shadow-xs bg-white text-slate-900 flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-receipt text-blue-600"></i>
+          <span>Expenses</span>
+          <span id="tabCountExpenses" class="bg-blue-50 text-blue-700 text-[11px] px-1.5 py-0.5 rounded-full font-bold">0</span>
+        </button>
+        <button id="tabBtnFunds" onclick="switchTab('funds')" class="flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-hand-holding-dollar text-indigo-600"></i>
+          <span>Advances</span>
+          <span id="tabCountFunds" class="bg-slate-100 text-slate-600 text-[11px] px-1.5 py-0.5 rounded-full font-bold">0</span>
+        </button>
+      </div>
+      <div class="text-xs text-slate-400 italic hidden md:block">
+        <i class="fa-regular fa-clipboard mr-1"></i> Paste screenshot anytime with <b>Cmd+V</b>
+      </div>
     </div>
 
     <!-- VIEW 1: EXPENSES TABLE / CARDS -->
     <div id="viewExpenses" class="space-y-4">
-      <div class="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden">
-        <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-          <div class="font-bold text-sm text-slate-700 flex items-center gap-2">
-            <i class="fa-solid fa-list-check text-blue-600"></i>
-            <span>Itemized Expense Records</span>
-          </div>
-          <div class="text-xs text-slate-500 italic hidden sm:block">
-            <i class="fa-regular fa-clipboard mr-1"></i> Tip: Press <b>Cmd+V / Ctrl+V</b> to paste screenshot
-          </div>
-        </div>
-
+      <div class="apple-card rounded-2xl overflow-hidden">
+        
         <!-- Desktop Table -->
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs sm:text-sm hidden md:table">
-            <thead class="bg-slate-100 text-slate-500 uppercase text-[11px] font-bold tracking-wider border-b border-slate-200">
+            <thead class="bg-slate-50 text-slate-500 uppercase text-[11px] font-bold tracking-wider border-b border-slate-100">
               <tr>
                 <th class="px-4 py-3 w-12 text-center">#</th>
                 <th class="px-4 py-3 w-28">Date</th>
@@ -304,13 +336,13 @@
           <div class="w-14 h-14 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-2xl">
             <i class="fa-regular fa-folder-open"></i>
           </div>
-          <div class="text-base font-bold text-slate-600">No expenses recorded yet</div>
-          <p class="text-xs text-slate-400">Add an expense or load the demo tour data to test export features.</p>
+          <div class="text-base font-bold text-slate-700">No expenses recorded yet</div>
+          <p class="text-xs text-slate-400 max-w-sm mx-auto">Add an expense or load the demo tour data to test exports and vouchers.</p>
           <div class="flex flex-wrap justify-center gap-2 pt-2">
-            <button onclick="openAddModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm flex items-center gap-1.5">
+            <button onclick="openAddModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-bold shadow-sm flex items-center gap-1.5 transition">
               <i class="fa-solid fa-plus"></i> Add First Expense
             </button>
-            <button onclick="loadDemoTourData()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold shadow-sm flex items-center gap-1.5">
+            <button onclick="loadDemoTourData()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-xs font-bold shadow-sm flex items-center gap-1.5 transition">
               <i class="fa-solid fa-wand-magic-sparkles"></i> Load Oct Tour Demo (56 Records)
             </button>
           </div>
@@ -320,21 +352,21 @@
 
     <!-- VIEW 2: COMPANY ADVANCES / FUNDS TABLE / CARDS -->
     <div id="viewFunds" class="hidden space-y-4">
-      <div class="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden">
-        <div class="px-4 py-3 bg-indigo-50/50 border-b border-indigo-100 flex justify-between items-center">
-          <div class="font-bold text-sm text-indigo-900 flex items-center gap-2">
+      <div class="apple-card rounded-2xl overflow-hidden">
+        <div class="px-4 py-3 bg-indigo-50/40 border-b border-indigo-100/60 flex justify-between items-center">
+          <div class="font-bold text-sm text-indigo-950 flex items-center gap-2">
             <i class="fa-solid fa-hand-holding-dollar text-indigo-600"></i>
             <span>Company Advances & Project Funds Received</span>
           </div>
-          <button onclick="openAddFundModal()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold shadow-xs flex items-center gap-1.5">
-            <i class="fa-solid fa-plus"></i> Add Advance
+          <button onclick="openAddFundModal()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-xs font-bold shadow-xs flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-plus text-[10px]"></i> Add Advance
           </button>
         </div>
 
         <!-- Desktop Table -->
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs sm:text-sm hidden md:table">
-            <thead class="bg-slate-100 text-slate-500 uppercase text-[11px] font-bold tracking-wider border-b border-slate-200">
+            <thead class="bg-slate-50 text-slate-500 uppercase text-[11px] font-bold tracking-wider border-b border-slate-100">
               <tr>
                 <th class="px-4 py-3 w-12 text-center">#</th>
                 <th class="px-4 py-3 w-28">Date Received</th>
@@ -354,14 +386,14 @@
 
         <!-- Empty state for Funds -->
         <div id="emptyFundsState" class="hidden p-12 text-center space-y-3">
-          <div class="w-14 h-14 mx-auto rounded-full bg-indigo-50 flex items-center justify-center text-indigo-400 text-2xl">
+          <div class="w-14 h-14 mx-auto rounded-full bg-indigo-50 flex items-center justify-center text-indigo-500 text-2xl">
             <i class="fa-solid fa-hand-holding-dollar"></i>
           </div>
-          <div class="text-base font-bold text-slate-600">No company advance recorded</div>
+          <div class="text-base font-bold text-slate-700">No company advance recorded</div>
           <p class="text-xs text-slate-400 max-w-sm mx-auto">Did the company give you an advance before or during your trip? Record it here so the app can calculate your actual reimbursement.</p>
           <div class="pt-2">
-            <button onclick="openAddFundModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm flex items-center gap-1.5 mx-auto">
-              <i class="fa-solid fa-plus"></i> Record Company Advance
+            <button onclick="openAddFundModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-xs font-bold shadow-sm flex items-center gap-1.5 mx-auto transition">
+              <i class="fa-solid fa-plus text-[10px]"></i> Record Company Advance
             </button>
           </div>
         </div>
@@ -369,17 +401,17 @@
     </div>
 
     <!-- FOOTER -->
-    <footer class="pt-6 pb-2 text-center text-xs text-slate-500 space-y-1">
-      <p class="font-bold text-slate-700">Expense Voucher & Advance Manager</p>
-      <p>Designed & Developed with ❤️ by <b>Shiraz Khan</b> • 100% Private Device-Sandbox PWA</p>
-      <p class="text-[11px] text-slate-400">Zero Server Data Leak • Runs entirely inside your browser on iOS, Android & Desktop</p>
+    <footer class="pt-8 pb-3 text-center text-xs text-slate-500 space-y-1">
+      <p class="font-bold text-slate-800 text-sm">Expense Voucher & Company Advance Manager</p>
+      <p class="text-slate-600">Designed & Developed with ❤️ by <b>Shiraz Khan</b> • 100% Private Client-Side PWA</p>
+      <p class="text-[11px] text-slate-400">Zero Server Data Leak • Runs entirely inside your browser on iOS, Android & macOS</p>
     </footer>
 
   </main>
 
-  <!-- MODAL 1: ADD EXPENSE MODAL -->
+  <!-- MODAL 1: ADD EXPENSE MODAL (Apple Sheet Style) -->
   <div id="addModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+    <div class="apple-card rounded-3xl shadow-2xl max-w-lg w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
       
       <!-- Modal Header -->
       <div class="px-5 py-3.5 bg-slate-900 text-white flex justify-between items-center shrink-0">
@@ -399,26 +431,26 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold text-slate-600 mb-1">Date *</label>
-            <input type="date" id="newDate" required class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+            <input type="date" id="newDate" required class="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition">
           </div>
           <div>
             <label class="block text-xs font-bold text-slate-600 mb-1">Paid By</label>
-            <input type="text" id="newPaidBy" value="Shiraz" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+            <input type="text" id="newPaidBy" value="Shiraz" class="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition">
           </div>
         </div>
 
         <!-- Description -->
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">Description / Item *</label>
-          <input type="text" id="newDescription" required placeholder="e.g. Zomato lunch, Uber ride, Hotel stay" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+          <input type="text" id="newDescription" required placeholder="e.g. Zomato lunch, Uber ride, Hotel stay" class="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition">
           <!-- Quick suggestions -->
           <div class="flex flex-wrap gap-1.5 mt-1.5 text-[11px]">
-            <button type="button" onclick="setDesc('Breakfast')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Breakfast</button>
-            <button type="button" onclick="setDesc('Lunch')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Lunch</button>
-            <button type="button" onclick="setDesc('Dinner')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Dinner</button>
-            <button type="button" onclick="setDesc('Uber ride')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Uber ride</button>
-            <button type="button" onclick="setDesc('Petrol')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Petrol</button>
-            <button type="button" onclick="setDesc('Water bottles')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Water bottles</button>
+            <button type="button" onclick="setDesc('Breakfast')" class="px-2 py-0.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600">Breakfast</button>
+            <button type="button" onclick="setDesc('Lunch')" class="px-2 py-0.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600">Lunch</button>
+            <button type="button" onclick="setDesc('Dinner')" class="px-2 py-0.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600">Dinner</button>
+            <button type="button" onclick="setDesc('Uber ride')" class="px-2 py-0.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600">Uber ride</button>
+            <button type="button" onclick="setDesc('Petrol')" class="px-2 py-0.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600">Petrol</button>
+            <button type="button" onclick="setDesc('Water bottles')" class="px-2 py-0.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600">Water bottles</button>
           </div>
         </div>
 
@@ -441,14 +473,14 @@
         <div>
           <div class="flex justify-between items-center mb-1">
             <label class="text-xs font-bold text-slate-600">Amount (INR) *</label>
-            <span id="calculatedTotalBadge" class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Total: ₹ 0.00</span>
+            <span id="calculatedTotalBadge" class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Total: ₹ 0.00</span>
           </div>
-          <input type="text" id="newAmount" required placeholder="e.g. 141+10 or 279.83" oninput="updateCalculatedTotal()" class="w-full text-sm font-semibold px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+          <input type="text" id="newAmount" required placeholder="e.g. 141+10 or 279.83" oninput="updateCalculatedTotal()" class="w-full text-sm font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition">
           <p class="text-[11px] text-slate-400 mt-1">Split payments supported (e.g., <code class="bg-slate-100 px-1 rounded">235+20</code> or <code class="bg-slate-100 px-1 rounded">3600+4800+100</code>).</p>
         </div>
 
         <!-- ATTACHMENT 1: PhonePe / Payment Proofs -->
-        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+        <div class="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/80 space-y-2">
           <div class="flex justify-between items-center">
             <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
               <i class="fa-solid fa-mobile-screen text-indigo-600"></i>
@@ -458,7 +490,7 @@
           </div>
 
           <div class="flex gap-2">
-            <label class="cursor-pointer bg-white border border-slate-300 hover:border-indigo-500 text-slate-700 text-xs px-3 py-2 rounded-lg font-medium flex items-center gap-2 shadow-xs transition">
+            <label class="cursor-pointer bg-white border border-slate-200 hover:border-indigo-500 text-slate-700 text-xs px-3.5 py-2 rounded-xl font-medium flex items-center gap-2 shadow-2xs transition">
               <i class="fa-solid fa-image text-indigo-600"></i> Choose Screenshot
               <input type="file" id="filePayments" multiple accept="image/*" class="hidden" onchange="handlePaymentFiles(event)">
             </label>
@@ -469,7 +501,7 @@
         </div>
 
         <!-- ATTACHMENT 2: Softcopy Bill / Camera Photo -->
-        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+        <div class="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/80 space-y-2">
           <div class="flex justify-between items-center">
             <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
               <i class="fa-solid fa-receipt text-emerald-600"></i>
@@ -480,13 +512,13 @@
 
           <div class="flex flex-wrap gap-2">
             <!-- Native Phone Camera -->
-            <label class="cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-lg font-medium flex items-center gap-2 shadow-xs transition">
+            <label class="cursor-pointer bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3.5 py-2 rounded-xl font-medium flex items-center gap-2 shadow-2xs transition">
               <i class="fa-solid fa-camera"></i> Take Photo
               <input type="file" id="fileBillsCamera" capture="environment" accept="image/*" class="hidden" onchange="handleBillFiles(event)">
             </label>
 
             <!-- File Upload -->
-            <label class="cursor-pointer bg-white border border-slate-300 hover:border-emerald-500 text-slate-700 text-xs px-3 py-2 rounded-lg font-medium flex items-center gap-2 shadow-xs transition">
+            <label class="cursor-pointer bg-white border border-slate-200 hover:border-emerald-500 text-slate-700 text-xs px-3.5 py-2 rounded-xl font-medium flex items-center gap-2 shadow-2xs transition">
               <i class="fa-solid fa-file-arrow-up text-emerald-600"></i> Choose File
               <input type="file" id="fileBillsUpload" multiple accept="image/*" class="hidden" onchange="handleBillFiles(event)">
             </label>
@@ -499,19 +531,19 @@
         <!-- Remark / Audit Note -->
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">Remark / Audit Note</label>
-          <input type="text" id="newRemark" placeholder="e.g. Bill not available, Water bottle not in bill" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+          <input type="text" id="newRemark" placeholder="e.g. Bill not available, Water bottle not in bill" class="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition">
           <!-- Quick remark chips -->
           <div class="flex flex-wrap gap-1.5 mt-1.5 text-[11px]">
-            <button type="button" onclick="setRemark('Bill not available; vendor does not give bill')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Bill not available</button>
-            <button type="button" onclick="setRemark('Bill machine out of order')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Machine out of order</button>
-            <button type="button" onclick="setRemark('Extra water bottle charge not included in bill')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Extra water</button>
+            <button type="button" onclick="setRemark('Bill not available; vendor does not give bill')" class="px-2 py-0.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600">Bill not available</button>
+            <button type="button" onclick="setRemark('Bill machine out of order')" class="px-2 py-0.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600">Machine out of order</button>
+            <button type="button" onclick="setRemark('Extra water bottle charge not included in bill')" class="px-2 py-0.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600">Extra water</button>
           </div>
         </div>
 
         <!-- Submit Button -->
         <div class="pt-2 flex justify-end gap-2">
-          <button type="button" onclick="closeAddModal()" class="px-4 py-2 border border-slate-300 text-slate-600 text-xs sm:text-sm font-semibold rounded-lg hover:bg-slate-100">Cancel</button>
-          <button type="submit" id="btnSaveExpense" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold rounded-lg shadow transition flex items-center gap-2">
+          <button type="button" onclick="closeAddModal()" class="px-4 py-2 border border-slate-200 text-slate-600 text-xs sm:text-sm font-semibold rounded-full hover:bg-slate-100 transition">Cancel</button>
+          <button type="submit" id="btnSaveExpense" class="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-bold rounded-full shadow-sm transition flex items-center gap-2">
             <i class="fa-solid fa-check"></i> Save Expense
           </button>
         </div>
@@ -521,7 +553,7 @@
 
   <!-- MODAL 2: ADD COMPANY ADVANCE / FUND RECEIVED -->
   <div id="addFundModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+    <div class="apple-card rounded-3xl shadow-2xl max-w-lg w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
       
       <!-- Modal Header -->
       <div class="px-5 py-3.5 bg-indigo-950 text-white flex justify-between items-center shrink-0">
@@ -540,33 +572,33 @@
         <!-- Date -->
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">Date Received *</label>
-          <input type="date" id="fundDate" required class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+          <input type="date" id="fundDate" required class="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition">
         </div>
 
         <!-- Advance Amount -->
         <div>
           <div class="flex justify-between items-center mb-1">
             <label class="text-xs font-bold text-slate-600">Advance Amount (INR) *</label>
-            <span id="fundCalculatedBadge" class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">Amount: ₹ 0.00</span>
+            <span id="fundCalculatedBadge" class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200">Amount: ₹ 0.00</span>
           </div>
-          <input type="text" id="fundAmount" required placeholder="e.g. 20000 or 20000+5000" oninput="updateFundCalculatedTotal()" class="w-full text-sm font-semibold px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+          <input type="text" id="fundAmount" required placeholder="e.g. 20000 or 20000+5000" oninput="updateFundCalculatedTotal()" class="w-full text-sm font-semibold px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition">
           <p class="text-[11px] text-slate-400 mt-1">Split additions supported (e.g., <code class="bg-slate-100 px-1 rounded">20000+5000</code>).</p>
         </div>
 
         <!-- Source / Given By -->
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">Source / Given By *</label>
-          <input type="text" id="fundSource" required placeholder="e.g. Head Office Transfer, Project Advance, Client Petty Cash" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+          <input type="text" id="fundSource" required placeholder="e.g. Head Office Transfer, Project Advance, Client Petty Cash" class="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition">
           <div class="flex flex-wrap gap-1.5 mt-1.5 text-[11px]">
-            <button type="button" onclick="setFundSource('Head Office Account Transfer')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Head Office</button>
-            <button type="button" onclick="setFundSource('Project Tour Advance')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Tour Advance</button>
-            <button type="button" onclick="setFundSource('Client Advance')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Client Advance</button>
-            <button type="button" onclick="setFundSource('Finance Dept - Extra Fund')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Extra Fund</button>
+            <button type="button" onclick="setFundSource('Head Office Account Transfer')" class="px-2 py-0.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600">Head Office</button>
+            <button type="button" onclick="setFundSource('Project Tour Advance')" class="px-2 py-0.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600">Tour Advance</button>
+            <button type="button" onclick="setFundSource('Client Advance')" class="px-2 py-0.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600">Client Advance</button>
+            <button type="button" onclick="setFundSource('Finance Dept - Extra Fund')" class="px-2 py-0.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600">Extra Fund</button>
           </div>
         </div>
 
         <!-- Bank Proof / Credit Screenshot -->
-        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+        <div class="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/80 space-y-2">
           <div class="flex justify-between items-center">
             <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
               <i class="fa-solid fa-mobile-screen text-indigo-600"></i>
@@ -576,7 +608,7 @@
           </div>
 
           <div class="flex gap-2">
-            <label class="cursor-pointer bg-white border border-slate-300 hover:border-indigo-500 text-slate-700 text-xs px-3 py-2 rounded-lg font-medium flex items-center gap-2 shadow-xs transition">
+            <label class="cursor-pointer bg-white border border-slate-200 hover:border-indigo-500 text-slate-700 text-xs px-3.5 py-2 rounded-xl font-medium flex items-center gap-2 shadow-2xs transition">
               <i class="fa-solid fa-image text-indigo-600"></i> Choose Screenshot / Slip
               <input type="file" id="fileFundProof" multiple accept="image/*" class="hidden" onchange="handleFundFiles(event)">
             </label>
@@ -589,13 +621,13 @@
         <!-- Reference / UTR / Remarks -->
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">Reference / UTR / Remarks</label>
-          <input type="text" id="fundRemark" placeholder="e.g. NEFT Ref #129381, Onsite travel advance" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+          <input type="text" id="fundRemark" placeholder="e.g. NEFT Ref #129381, Onsite travel advance" class="w-full text-xs sm:text-sm px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition">
         </div>
 
         <!-- Submit Button -->
         <div class="pt-2 flex justify-end gap-2">
-          <button type="button" onclick="closeAddFundModal()" class="px-4 py-2 border border-slate-300 text-slate-600 text-xs sm:text-sm font-semibold rounded-lg hover:bg-slate-100">Cancel</button>
-          <button type="submit" id="btnSaveFund" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold rounded-lg shadow transition flex items-center gap-2">
+          <button type="button" onclick="closeAddFundModal()" class="px-4 py-2 border border-slate-200 text-slate-600 text-xs sm:text-sm font-semibold rounded-full hover:bg-slate-100 transition">Cancel</button>
+          <button type="submit" id="btnSaveFund" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-bold rounded-full shadow-sm transition flex items-center gap-2">
             <i class="fa-solid fa-check"></i> Save Advance Fund
           </button>
         </div>
@@ -609,7 +641,7 @@
       <button onclick="closeLightbox()" class="absolute -top-10 right-0 text-white text-2xl hover:text-slate-300">
         <i class="fa-solid fa-xmark"></i>
       </button>
-      <img id="lightboxImg" src="" alt="Voucher Attachment" class="max-h-[82vh] max-w-full rounded-lg shadow-2xl object-contain border border-slate-700 bg-black">
+      <img id="lightboxImg" src="" alt="Voucher Attachment" class="max-h-[82vh] max-w-full rounded-2xl shadow-2xl object-contain border border-slate-800 bg-black">
       <div id="lightboxCaption" class="text-white text-xs mt-2 font-medium tracking-wide"></div>
     </div>
   </div>
@@ -671,7 +703,7 @@
       await refreshAllData();
     });
 
-    // Tab Switching
+    // Native macOS Segmented Control Tab Switcher
     function switchTab(tab) {
       activeTab = tab;
       const tabExp = document.getElementById('tabBtnExpenses');
@@ -680,13 +712,13 @@
       const viewFnd = document.getElementById('viewFunds');
 
       if (tab === 'expenses') {
-        tabExp.className = "px-4 py-2 font-bold text-sm border-b-2 border-blue-600 text-blue-700 flex items-center gap-2 transition";
-        tabFnd.className = "px-4 py-2 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 transition";
+        tabExp.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition shadow-xs bg-white text-slate-900 flex items-center justify-center gap-1.5";
+        tabFnd.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5";
         viewExp.classList.remove('hidden');
         viewFnd.classList.add('hidden');
       } else {
-        tabExp.className = "px-4 py-2 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 transition";
-        tabFnd.className = "px-4 py-2 font-bold text-sm border-b-2 border-indigo-600 text-indigo-700 flex items-center gap-2 transition";
+        tabExp.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5";
+        tabFnd.className = "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition shadow-xs bg-white text-slate-900 flex items-center justify-center gap-1.5";
         viewExp.classList.add('hidden');
         viewFnd.classList.remove('hidden');
       }
@@ -781,37 +813,35 @@
 
       if (netSettlement > 0) {
         // Expenses exceed Advance -> Employee is owed reimbursement!
-        settlementCard.className = "bg-gradient-to-br from-emerald-600 to-teal-800 text-white rounded-2xl p-4 shadow-md flex flex-col justify-between";
+        settlementCard.className = "rounded-3xl p-5 shadow-sm text-white flex flex-col justify-between transition-all duration-200 bg-gradient-to-br from-emerald-600 to-teal-800";
         statusLabel.textContent = "Reimbursement Due";
         pill.textContent = "Company Payable";
-        pill.className = "text-[10px] font-bold bg-white/20 text-white px-2 py-0.5 rounded-full backdrop-blur-xs";
+        pill.className = "text-[10px] font-bold bg-white/20 text-white px-2.5 py-0.5 rounded-full backdrop-blur-md";
         amountDisp.textContent = `₹ ${netSettlement.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
         sub.textContent = `Out-of-pocket expenses beyond company advance`;
         footnote.textContent = `Company owes this balance to employee`;
       } else if (netSettlement < 0) {
         // Advance exceeds Expenses -> Employee has unspent company money
-        settlementCard.className = "bg-gradient-to-br from-indigo-700 to-slate-900 text-white rounded-2xl p-4 shadow-md flex flex-col justify-between";
+        settlementCard.className = "rounded-3xl p-5 shadow-sm text-white flex flex-col justify-between transition-all duration-200 bg-gradient-to-br from-indigo-600 via-indigo-700 to-slate-900";
         statusLabel.textContent = "Advance Remaining";
         pill.textContent = "Balance to Return";
-        pill.className = "text-[10px] font-bold bg-amber-400 text-slate-950 px-2 py-0.5 rounded-full font-black";
+        pill.className = "text-[10px] font-bold bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-full font-black";
         amountDisp.textContent = `₹ ${Math.abs(netSettlement).toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
         sub.textContent = `Unspent advance funds remaining in hand`;
         footnote.textContent = `Balance to return to company account`;
       } else {
         // Exactly Settled
-        settlementCard.className = "bg-gradient-to-br from-slate-700 to-slate-900 text-white rounded-2xl p-4 shadow-md flex flex-col justify-between";
+        settlementCard.className = "rounded-3xl p-5 shadow-sm text-white flex flex-col justify-between transition-all duration-200 bg-gradient-to-br from-slate-700 to-zinc-900";
         statusLabel.textContent = "Settlement Balance";
         pill.textContent = "Fully Settled";
-        pill.className = "text-[10px] font-bold bg-emerald-400 text-slate-950 px-2 py-0.5 rounded-full font-black";
+        pill.className = "text-[10px] font-bold bg-emerald-400 text-slate-950 px-2.5 py-0.5 rounded-full font-black";
         amountDisp.textContent = `₹ 0.00`;
         sub.textContent = `Total expenses match company advance`;
         footnote.textContent = `Zero out-of-pocket claim`;
       }
 
-      // 5. Render Expenses Table & Mobile Cards
+      // 5. Render Lists
       renderExpensesList(expenses);
-
-      // 6. Render Advances Table & Mobile Cards
       renderFundsList(funds);
     }
 
@@ -836,24 +866,24 @@
 
         // Desktop Row
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50 transition";
+        tr.className = "hover:bg-slate-50/80 transition";
         tr.innerHTML = `
-          <td class="px-4 py-3 text-center font-bold text-slate-400">${sNo}</td>
-          <td class="px-4 py-3 font-semibold text-slate-600 whitespace-nowrap">${e.date}</td>
-          <td class="px-4 py-3 font-bold text-slate-800">${e.description}</td>
-          <td class="px-4 py-3">
-            <span class="inline-block px-2 py-0.5 rounded text-[11px] font-bold ${getCategoryBadgeClass(e.category)}">${e.category}</span>
+          <td class="px-4 py-3.5 text-center font-bold text-slate-400">${sNo}</td>
+          <td class="px-4 py-3.5 font-semibold text-slate-600 whitespace-nowrap">${e.date}</td>
+          <td class="px-4 py-3.5 font-bold text-slate-800">${e.description}</td>
+          <td class="px-4 py-3.5">
+            <span class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold ${getCategoryBadgeClass(e.category)}">${e.category}</span>
           </td>
-          <td class="px-4 py-3 text-right font-extrabold text-emerald-700 whitespace-nowrap">₹ ${e.amountExpression || e.amountTotal}</td>
-          <td class="px-4 py-3 text-center">
+          <td class="px-4 py-3.5 text-right font-black text-emerald-700 whitespace-nowrap">₹ ${e.amountExpression || e.amountTotal}</td>
+          <td class="px-4 py-3.5 text-center">
             <div class="flex items-center justify-center gap-1.5">
               ${renderBlobThumbnails(payments, 'Payment')}
               ${renderBlobThumbnails(bills, 'Bill')}
-              ${bills.length === 0 ? '<span class="text-[10px] bg-amber-50 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded font-bold">No Bill</span>' : ''}
+              ${bills.length === 0 ? '<span class="text-[10px] bg-amber-50 text-amber-700 border border-amber-200/80 px-2 py-0.5 rounded-full font-bold">No Bill</span>' : ''}
             </div>
           </td>
-          <td class="px-4 py-3 text-slate-500 text-xs italic">${e.remark || '-'}</td>
-          <td class="px-4 py-3 text-center">
+          <td class="px-4 py-3.5 text-slate-500 text-xs italic">${e.remark || '-'}</td>
+          <td class="px-4 py-3.5 text-center">
             <button onclick="deleteExpenseItem(${e.id})" class="text-slate-400 hover:text-rose-600 transition" title="Delete">
               <i class="fa-regular fa-trash-can"></i>
             </button>
@@ -863,23 +893,23 @@
 
         // Mobile Card
         const card = document.createElement('div');
-        card.className = "p-4 space-y-2 hover:bg-slate-50 transition";
+        card.className = "p-4 space-y-2 hover:bg-slate-50/60 transition";
         card.innerHTML = `
           <div class="flex justify-between items-start">
             <div class="flex items-center gap-2">
               <span class="text-xs font-bold text-slate-400">#${sNo}</span>
               <span class="text-xs text-slate-500 font-semibold">${e.date}</span>
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${getCategoryBadgeClass(e.category)}">${e.category}</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${getCategoryBadgeClass(e.category)}">${e.category}</span>
             </div>
-            <div class="text-sm font-extrabold text-emerald-700">₹ ${e.amountExpression || e.amountTotal}</div>
+            <div class="text-sm font-black text-emerald-700">₹ ${e.amountExpression || e.amountTotal}</div>
           </div>
           <div class="font-bold text-slate-800 text-sm">${e.description}</div>
-          ${e.remark ? `<div class="text-xs text-slate-500 italic bg-slate-50 p-1.5 rounded border border-slate-100">${e.remark}</div>` : ''}
+          ${e.remark ? `<div class="text-xs text-slate-500 italic bg-slate-50 p-2 rounded-xl border border-slate-100">${e.remark}</div>` : ''}
           <div class="flex items-center justify-between pt-1">
             <div class="flex items-center gap-1.5">
               ${renderBlobThumbnails(payments, 'Payment')}
               ${renderBlobThumbnails(bills, 'Bill')}
-              ${bills.length === 0 ? '<span class="text-[10px] bg-amber-50 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded font-bold">No Bill</span>' : ''}
+              ${bills.length === 0 ? '<span class="text-[10px] bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full font-bold">No Bill</span>' : ''}
             </div>
             <button onclick="deleteExpenseItem(${e.id})" class="text-slate-400 hover:text-rose-600 text-xs p-1">
               <i class="fa-regular fa-trash-can"></i>
@@ -910,20 +940,20 @@
 
         // Desktop Row
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50 transition";
+        tr.className = "hover:bg-slate-50/80 transition";
         tr.innerHTML = `
-          <td class="px-4 py-3 text-center font-bold text-slate-400">${sNo}</td>
-          <td class="px-4 py-3 font-semibold text-slate-600 whitespace-nowrap">${f.date}</td>
-          <td class="px-4 py-3 font-bold text-indigo-950">${f.source || 'Company Advance'}</td>
-          <td class="px-4 py-3 text-right font-extrabold text-indigo-700 whitespace-nowrap">₹ ${f.amountExpression || f.amountTotal}</td>
-          <td class="px-4 py-3 text-center">
+          <td class="px-4 py-3.5 text-center font-bold text-slate-400">${sNo}</td>
+          <td class="px-4 py-3.5 font-semibold text-slate-600 whitespace-nowrap">${f.date}</td>
+          <td class="px-4 py-3.5 font-bold text-indigo-950">${f.source || 'Company Advance'}</td>
+          <td class="px-4 py-3.5 text-right font-black text-indigo-700 whitespace-nowrap">₹ ${f.amountExpression || f.amountTotal}</td>
+          <td class="px-4 py-3.5 text-center">
             <div class="flex items-center justify-center gap-1.5">
               ${renderBlobThumbnails(proofs, 'Transfer Proof')}
               ${proofs.length === 0 ? '<span class="text-[10px] text-slate-400 italic">No slip</span>' : ''}
             </div>
           </td>
-          <td class="px-4 py-3 text-slate-600 text-xs">${f.remark || '-'}</td>
-          <td class="px-4 py-3 text-center">
+          <td class="px-4 py-3.5 text-slate-600 text-xs">${f.remark || '-'}</td>
+          <td class="px-4 py-3.5 text-center">
             <button onclick="deleteFundItem(${f.id})" class="text-slate-400 hover:text-rose-600 transition" title="Delete">
               <i class="fa-regular fa-trash-can"></i>
             </button>
@@ -933,17 +963,17 @@
 
         // Mobile Card
         const card = document.createElement('div');
-        card.className = "p-4 space-y-2 hover:bg-slate-50 transition";
+        card.className = "p-4 space-y-2 hover:bg-slate-50/60 transition";
         card.innerHTML = `
           <div class="flex justify-between items-start">
             <div class="flex items-center gap-2">
               <span class="text-xs font-bold text-slate-400">#${sNo}</span>
               <span class="text-xs text-slate-500 font-semibold">${f.date}</span>
             </div>
-            <div class="text-sm font-extrabold text-indigo-700">₹ ${f.amountExpression || f.amountTotal}</div>
+            <div class="text-sm font-black text-indigo-700">₹ ${f.amountExpression || f.amountTotal}</div>
           </div>
           <div class="font-bold text-indigo-950 text-sm">${f.source || 'Company Advance'}</div>
-          ${f.remark ? `<div class="text-xs text-slate-600 italic bg-indigo-50/50 p-1.5 rounded border border-indigo-100">${f.remark}</div>` : ''}
+          ${f.remark ? `<div class="text-xs text-slate-600 italic bg-indigo-50/40 p-2 rounded-xl border border-indigo-100/60">${f.remark}</div>` : ''}
           <div class="flex items-center justify-between pt-1">
             <div class="flex items-center gap-1.5">
               ${renderBlobThumbnails(proofs, 'Transfer Proof')}
@@ -963,7 +993,7 @@
         const url = URL.createObjectURL(item.blob);
         return `
           <img src="${url}" alt="${type}" onclick="openLightbox('${url}', '${type} ${idx+1}: ${item.name || ''}')" 
-               class="w-7 h-7 rounded border border-slate-300 object-cover cursor-pointer hover:scale-110 transition shadow-xs">
+               class="w-7 h-7 rounded-lg border border-slate-200 object-cover cursor-pointer hover:scale-110 transition shadow-2xs">
         `;
       }).join('');
     }
@@ -971,11 +1001,11 @@
     function getCategoryBadgeClass(cat) {
       switch ((cat || '').toLowerCase()) {
         case 'food':
-        case 'food & beverage': return 'bg-amber-100 text-amber-800';
-        case 'travel': return 'bg-blue-100 text-blue-800';
-        case 'fuel': return 'bg-rose-100 text-rose-800';
-        case 'accommodation': return 'bg-purple-100 text-purple-800';
-        case 'medical': return 'bg-emerald-100 text-emerald-800';
+        case 'food & beverage': return 'bg-amber-100/80 text-amber-800';
+        case 'travel': return 'bg-blue-100/80 text-blue-800';
+        case 'fuel': return 'bg-rose-100/80 text-rose-800';
+        case 'accommodation': return 'bg-purple-100/80 text-purple-800';
+        case 'medical': return 'bg-emerald-100/80 text-emerald-800';
         default: return 'bg-slate-100 text-slate-700';
       }
     }
@@ -1097,14 +1127,14 @@
       const bContainer = document.getElementById('billThumbnails');
 
       pContainer.innerHTML = pendingPayments.map((f, i) => `
-        <div class="relative w-12 h-12 rounded border border-slate-300 overflow-hidden shadow-xs">
+        <div class="relative w-12 h-12 rounded-xl border border-slate-200 overflow-hidden shadow-2xs">
           <img src="${URL.createObjectURL(f.blob)}" class="w-full h-full object-cover">
           <button type="button" onclick="removePendingPayment(${i})" class="absolute top-0 right-0 bg-rose-600 text-white w-4 h-4 text-[9px] flex items-center justify-center font-bold">✕</button>
         </div>
       `).join('');
 
       bContainer.innerHTML = pendingBills.map((f, i) => `
-        <div class="relative w-12 h-12 rounded border border-slate-300 overflow-hidden shadow-xs">
+        <div class="relative w-12 h-12 rounded-xl border border-slate-200 overflow-hidden shadow-2xs">
           <img src="${URL.createObjectURL(f.blob)}" class="w-full h-full object-cover">
           <button type="button" onclick="removePendingBill(${i})" class="absolute top-0 right-0 bg-rose-600 text-white w-4 h-4 text-[9px] flex items-center justify-center font-bold">✕</button>
         </div>
@@ -1114,7 +1144,7 @@
     function renderFundThumbnails() {
       const container = document.getElementById('fundThumbnails');
       container.innerHTML = pendingFundProofs.map((f, i) => `
-        <div class="relative w-12 h-12 rounded border border-slate-300 overflow-hidden shadow-xs">
+        <div class="relative w-12 h-12 rounded-xl border border-slate-200 overflow-hidden shadow-2xs">
           <img src="${URL.createObjectURL(f.blob)}" class="w-full h-full object-cover">
           <button type="button" onclick="removePendingFundProof(${i})" class="absolute top-0 right-0 bg-rose-600 text-white w-4 h-4 text-[9px] flex items-center justify-center font-bold">✕</button>
         </div>
@@ -1456,8 +1486,8 @@
     // Toast
     function showToast(msg) {
       const toast = document.createElement('div');
-      toast.className = "fixed bottom-5 right-5 bg-slate-900 text-white text-xs px-4 py-2.5 rounded-xl shadow-lg z-50 flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2 border border-slate-700";
-      toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i> ${msg}`;
+      toast.className = "fixed bottom-5 right-5 apple-glass text-white text-xs px-4 py-3 rounded-2xl shadow-xl z-50 flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-2 border border-white/10";
+      toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i> <span class="font-medium">${msg}</span>`;
       document.body.appendChild(toast);
       setTimeout(() => toast.remove(), 2500);
     }
