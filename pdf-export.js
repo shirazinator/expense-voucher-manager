@@ -51,7 +51,7 @@ async function ensureJpegBuffer(blob) {
   });
 }
 
-async function generatePDFVouchers(expenses, cycleLabel = 'Report') {
+async function generatePDFVouchers(expenses, cycleLabel = 'Report', fundsSummary = null) {
   if (!window.PDFLib) {
     throw new Error('PDF-Lib library not loaded');
   }
@@ -185,7 +185,7 @@ async function generatePDFVouchers(expenses, cycleLabel = 'Report') {
       color: rgb(0.886, 0.91, 0.941)
     });
 
-    page.drawText('Expense Claim • Shiraz Khan (Tour / Work Expenses)', {
+    page.drawText('Expense Claim • Developed by Shiraz Khan', {
       x: 24,
       y: footY,
       size: 7.5,
@@ -193,9 +193,19 @@ async function generatePDFVouchers(expenses, cycleLabel = 'Report') {
       color: slateLight
     });
 
-    const totalTxt = `Total Claim: Rs. ${totalClaim.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
-    page.drawText(totalTxt, {
-      x: PAGE_W / 2 - 40,
+    let summaryTxt = `Total Claim: Rs. ${totalClaim.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+    if (fundsSummary && fundsSummary.totalAdvance > 0) {
+      const advStr = fundsSummary.totalAdvance.toLocaleString('en-IN', { minimumFractionDigits: 0 });
+      const netStr = Math.abs(fundsSummary.netBalance).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+      if (fundsSummary.netBalance >= 0) {
+        summaryTxt = `Advance: Rs. ${advStr} | Claim: Rs. ${totalClaim.toLocaleString('en-IN', { minimumFractionDigits: 0 })} | Reimbursement Due: Rs. ${netStr}`;
+      } else {
+        summaryTxt = `Advance: Rs. ${advStr} | Claim: Rs. ${totalClaim.toLocaleString('en-IN', { minimumFractionDigits: 0 })} | Balance to Return: Rs. ${netStr}`;
+      }
+    }
+
+    page.drawText(summaryTxt, {
+      x: 185,
       y: footY,
       size: 7.5,
       font: fontBold,

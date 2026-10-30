@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Expenses">
-  <meta name="theme-color" content="#1E3A8A">
+  <meta name="apple-mobile-web-app-title" content="Expense Manager">
+  <meta name="theme-color" content="#0F172A">
   <link rel="manifest" href="manifest.json">
-  <title>Expense Voucher & Bill Manager</title>
+  <title>Expense Voucher & Fund Manager — by Shiraz</title>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -29,83 +29,169 @@
 
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    .glass-card { background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px); }
+    .glass-nav { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px); }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen pb-24">
 
-  <!-- Top Navigation Bar -->
-  <header class="bg-blue-900 text-white shadow-md sticky top-0 z-40">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+  <!-- TOP NAVIGATION BAR -->
+  <header class="glass-nav text-white shadow-lg sticky top-0 z-40 border-b border-slate-800">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
+      
+      <!-- Brand & Developer Credit -->
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-blue-800 flex items-center justify-center border border-blue-700 shadow-inner">
-          <i class="fa-solid fa-receipt text-emerald-400 text-lg"></i>
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-inner border border-blue-400/30">
+          <i class="fa-solid fa-wallet text-white text-lg"></i>
         </div>
         <div>
-          <h1 class="text-base sm:text-lg font-bold leading-tight flex items-center gap-2">
-            <span>Expense Voucher Manager</span>
-            <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-1.5 py-0.5 rounded font-mono">100% Private</span>
-          </h1>
-          <p class="text-xs text-blue-200">Device-Only Storage • Zero Server Data Leak</p>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base sm:text-lg font-black tracking-tight leading-tight">Expense & Advance Manager</h1>
+            <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full font-mono hidden sm:inline-block">100% Private</span>
+          </div>
+          <p class="text-xs text-slate-400 flex items-center gap-1.5">
+            <span>Crafted by <b class="text-blue-300">Shiraz</b></span>
+            <span>•</span>
+            <span class="text-emerald-400"><i class="fa-solid fa-shield-halved text-[10px] mr-1"></i>Device Sandbox</span>
+          </p>
         </div>
       </div>
+
+      <!-- Action Buttons -->
       <div class="flex items-center gap-2">
-        <button onclick="openAddModal()" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-lg shadow flex items-center gap-2 transition">
-          <i class="fa-solid fa-plus"></i>
-          <span>Add Expense</span>
+        <button onclick="openAddFundModal()" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-xs sm:text-sm px-3.5 py-2 rounded-xl shadow-md transition flex items-center gap-2">
+          <i class="fa-solid fa-hand-holding-dollar"></i>
+          <span>+ Add Advance</span>
+        </button>
+        <button onclick="openAddModal()" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-bold text-xs sm:text-sm px-3.5 py-2 rounded-xl shadow-md transition flex items-center gap-2">
+          <i class="fa-solid fa-receipt"></i>
+          <span>+ Add Expense</span>
         </button>
       </div>
+
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto px-4 py-5 space-y-5">
 
-    <!-- Privacy Banner -->
-    <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs text-emerald-900">
+    <!-- PRIVACY & BACKUP BANNER -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600 shadow-xs">
       <div class="flex items-center gap-2.5">
         <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-          <i class="fa-solid fa-shield-halved"></i>
+          <i class="fa-solid fa-shield-check"></i>
         </div>
-        <span><b>Device Sandbox Storage:</b> All expenses, bank screenshots, and bills are saved <b>only inside your device's browser</b>. Zero server data leakage.</span>
+        <span><b>Device Sandbox Storage:</b> All expenses, company advances, bank proofs, and softcopy bills are saved <b>strictly in your device's browser</b>. Zero server data leakage.</span>
       </div>
-      <div class="flex items-center gap-3 shrink-0">
-        <button onclick="backupData()" class="font-bold underline hover:text-emerald-700 flex items-center gap-1" title="Download private backup JSON">
+      <div class="flex items-center gap-3 shrink-0 text-slate-700">
+        <button onclick="backupData()" class="font-bold underline hover:text-blue-700 flex items-center gap-1" title="Download private backup JSON">
           <i class="fa-solid fa-download"></i> Backup
         </button>
-        <span class="text-emerald-300">|</span>
-        <label class="font-bold underline hover:text-emerald-700 flex items-center gap-1 cursor-pointer" title="Restore from backup JSON">
+        <span class="text-slate-300">|</span>
+        <label class="font-bold underline hover:text-blue-700 flex items-center gap-1 cursor-pointer" title="Restore from backup JSON">
           <i class="fa-solid fa-upload"></i> Restore
           <input type="file" accept=".json" class="hidden" onchange="restoreData(event)">
         </label>
-        <span class="text-emerald-300">|</span>
+        <span class="text-slate-300">|</span>
         <button onclick="clearAllData()" class="text-rose-600 hover:text-rose-800 font-bold underline flex items-center gap-1" title="Wipe local storage">
           <i class="fa-regular fa-trash-can"></i> Clear All
         </button>
       </div>
     </div>
 
-    <!-- Cycle Filter & Date Range Bar -->
-    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-2">
-          <i class="fa-regular fa-calendar-days text-blue-600 text-lg"></i>
-          <span class="text-sm font-bold text-slate-700">Expense Cycle / Filter</span>
+    <!-- HERO FINANCIAL SETTLEMENT DASHBOARD (Company Advance vs Expenses) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+      
+      <!-- Card 1: Company Advances Received -->
+      <div class="bg-gradient-to-br from-indigo-50 to-blue-50/60 border border-indigo-200 rounded-2xl p-4 shadow-xs relative overflow-hidden flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <div class="text-xs font-bold text-indigo-900 uppercase tracking-wider flex items-center gap-1.5">
+            <i class="fa-solid fa-hand-holding-dollar text-indigo-600 text-sm"></i>
+            <span>Company Advance Received</span>
+          </div>
+          <button onclick="switchTab('funds')" class="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 underline">
+            View Advances
+          </button>
         </div>
+        <div class="py-2">
+          <div id="statTotalAdvance" class="text-2xl sm:text-3xl font-black text-indigo-950">₹ 0.00</div>
+          <div id="statAdvanceCount" class="text-xs font-semibold text-indigo-700 mt-0.5">0 Advances recorded</div>
+        </div>
+        <div class="pt-1 flex items-center justify-between text-[11px] text-indigo-600 border-t border-indigo-100">
+          <span>Funds received for project/tour</span>
+          <button onclick="openAddFundModal()" class="font-bold underline">+ Add Fund</button>
+        </div>
+      </div>
+
+      <!-- Card 2: Total Expenses Claimed -->
+      <div class="bg-gradient-to-br from-blue-50 to-slate-50 border border-blue-200 rounded-2xl p-4 shadow-xs relative overflow-hidden flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <div class="text-xs font-bold text-blue-900 uppercase tracking-wider flex items-center gap-1.5">
+            <i class="fa-solid fa-receipt text-blue-600 text-sm"></i>
+            <span>Total Expenses Spent</span>
+          </div>
+          <button onclick="switchTab('expenses')" class="text-[11px] font-bold text-blue-600 hover:text-blue-800 underline">
+            View Expenses
+          </button>
+        </div>
+        <div class="py-2">
+          <div id="statTotalAmount" class="text-2xl sm:text-3xl font-black text-slate-900">₹ 0.00</div>
+          <div id="statTotalCount" class="text-xs font-semibold text-blue-700 mt-0.5">0 Vouchers in filtered cycle</div>
+        </div>
+        <div class="pt-1 flex items-center justify-between text-[11px] text-slate-500 border-t border-blue-100">
+          <span><span id="statBillsCount">0</span> with bills • <span id="statNoBillCount">0</span> no bill</span>
+          <button onclick="openAddModal()" class="font-bold text-blue-700 underline">+ Add Expense</button>
+        </div>
+      </div>
+
+      <!-- Card 3: Net Settlement Status (Dynamic calculation) -->
+      <div id="settlementCard" class="bg-gradient-to-br from-emerald-500 to-teal-700 text-white rounded-2xl p-4 shadow-md flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <div class="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5" id="settlementBadgeTitle">
+            <i class="fa-solid fa-scale-balanced text-emerald-200 text-sm"></i>
+            <span id="settlementStatusLabel">Reimbursement Due</span>
+          </div>
+          <span id="settlementPill" class="text-[10px] font-bold bg-white/20 text-white px-2 py-0.5 rounded-full backdrop-blur-xs">
+            Payable by Company
+          </span>
+        </div>
+        <div class="py-2">
+          <div id="statSettlementAmount" class="text-2xl sm:text-3xl font-black text-white">₹ 0.00</div>
+          <div id="statSettlementSub" class="text-xs text-emerald-100 mt-0.5 font-medium">Out-of-pocket expenses beyond advance</div>
+        </div>
+        <div class="pt-1 text-[11px] text-white/90 border-t border-white/20 flex items-center justify-between">
+          <span id="settlementFootNote">Company owes this balance</span>
+          <button onclick="triggerExport('pdf')" class="font-bold underline text-white hover:text-emerald-100">Export Claim</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- DATE & TRIP FILTER (Clarified & User-Friendly) -->
+    <div class="bg-white rounded-2xl p-4 shadow-xs border border-slate-200 space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <i class="fa-regular fa-calendar-days text-blue-600 text-base"></i>
+            <span class="text-sm font-bold text-slate-800">Filter by Trip or Billing Cycle</span>
+          </div>
+          <p class="text-xs text-slate-500">Select dates to view or export expenses for a specific project tour or month.</p>
+        </div>
+        
         <!-- Quick Preset Buttons -->
         <div class="flex flex-wrap gap-1.5 text-xs">
-          <button onclick="setCyclePreset('all')" class="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium">All Time</button>
-          <button onclick="setCyclePreset('nov')" class="px-2.5 py-1 rounded-md bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium">Nov 5 – Nov 30</button>
-          <button onclick="setCyclePreset('oct')" class="px-2.5 py-1 rounded-md bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium">Oct Tour (6-18)</button>
+          <button onclick="setCyclePreset('all')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold transition">All Records</button>
+          <button onclick="setCyclePreset('oct')" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold transition">Oct Tour (6-18)</button>
+          <button onclick="setCyclePreset('this_month')" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold transition">This Month</button>
+          <button onclick="setCyclePreset('last_30')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold transition">Last 30 Days</button>
         </div>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-1">
         <div>
-          <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Start Date</label>
+          <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase tracking-wider">From Date (Trip Start)</label>
           <input type="date" id="filterStartDate" onchange="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
         </div>
         <div>
-          <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase tracking-wider">End Date</label>
+          <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase tracking-wider">To Date (Trip End)</label>
           <input type="date" id="filterEndDate" onchange="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
         </div>
         <div>
@@ -115,156 +201,189 @@
             <option value="Food">Food & Beverage</option>
             <option value="Travel">Travel / Uber</option>
             <option value="Fuel">Fuel / Petrol</option>
-            <option value="Accommodation">Accommodation</option>
-            <option value="Medical">Medical</option>
+            <option value="Accommodation">Accommodation / Hotel</option>
+            <option value="Medical">Medical Aid</option>
             <option value="Food Supplies">Supplies</option>
             <option value="Transport">Transport</option>
+            <option value="Other">Other</option>
           </select>
         </div>
         <div class="flex items-end gap-2">
-          <input type="text" id="filterSearch" placeholder="Search item, note..." oninput="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-          <button onclick="resetFilter()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs" title="Reset filter">
+          <div class="w-full">
+            <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase tracking-wider">Search</label>
+            <input type="text" id="filterSearch" placeholder="Item, note, vendor..." oninput="applyFilter()" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+          </div>
+          <button onclick="resetFilter()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs shrink-0" title="Reset filter">
             <i class="fa-solid fa-rotate-left"></i>
           </button>
         </div>
       </div>
     </div>
 
-    <!-- KPI Summary Metrics -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div class="bg-white rounded-xl p-3.5 shadow-sm border border-slate-200 flex items-center gap-3">
-        <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shrink-0">
-          <i class="fa-solid fa-indian-rupee-sign"></i>
-        </div>
-        <div>
-          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Cycle Total</div>
-          <div id="statTotalAmount" class="text-base sm:text-lg font-extrabold text-emerald-700">₹ 0.00</div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl p-3.5 shadow-sm border border-slate-200 flex items-center gap-3">
-        <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl shrink-0">
-          <i class="fa-solid fa-file-invoice"></i>
-        </div>
-        <div>
-          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Vouchers</div>
-          <div id="statTotalCount" class="text-base sm:text-lg font-extrabold text-blue-900">0 Items</div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl p-3.5 shadow-sm border border-slate-200 flex items-center gap-3">
-        <div class="w-11 h-11 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl shrink-0">
-          <i class="fa-solid fa-paperclip"></i>
-        </div>
-        <div>
-          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Bills Attached</div>
-          <div id="statBillsCount" class="text-base sm:text-lg font-extrabold text-purple-700">0</div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl p-3.5 shadow-sm border border-slate-200 flex items-center gap-3">
-        <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl shrink-0">
-          <i class="fa-solid fa-triangle-exclamation"></i>
-        </div>
-        <div>
-          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">No Official Bill</div>
-          <div id="statNoBillCount" class="text-base sm:text-lg font-extrabold text-amber-700">0</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Export Action Bar -->
+    <!-- EXPORT ACTION BAR -->
     <div class="flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-slate-900 to-blue-950 text-white rounded-2xl p-4 shadow-md">
       <div>
         <div class="font-bold text-sm sm:text-base flex items-center gap-2">
           <i class="fa-solid fa-cloud-arrow-down text-emerald-400"></i>
-          <span>Cycle Report Exports</span>
+          <span>Official Reports & Audit Export</span>
         </div>
-        <p class="text-xs text-slate-300">Generated 100% on this device in 1-page-per-voucher audit format</p>
+        <p class="text-xs text-slate-300">Generates 1-page-per-voucher audit PDF with company advance reconciliation</p>
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
-        <button id="btnExportPDF" onclick="triggerExport('pdf')" class="bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-lg shadow transition flex items-center gap-2">
+        <button id="btnExportPDF" onclick="triggerExport('pdf')" class="bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-xl shadow transition flex items-center gap-2">
           <i class="fa-solid fa-file-pdf"></i>
           <span>PDF Vouchers</span>
         </button>
-        <button id="btnExportExcel" onclick="triggerExport('excel')" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-lg shadow transition flex items-center gap-2">
+        <button id="btnExportExcel" onclick="triggerExport('excel')" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-xl shadow transition flex items-center gap-2">
           <i class="fa-solid fa-file-excel"></i>
           <span>Excel Sheet</span>
         </button>
-        <button id="btnExportZip" onclick="triggerExport('zip')" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-lg shadow transition flex items-center gap-2">
+        <button id="btnExportZip" onclick="triggerExport('zip')" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold text-xs sm:text-sm px-3.5 py-2 rounded-xl shadow transition flex items-center gap-2">
           <i class="fa-solid fa-file-zipper"></i>
           <span>Full Bundle (ZIP)</span>
         </button>
       </div>
     </div>
 
-    <!-- Transactions List Container -->
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-      <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-        <div class="font-bold text-sm text-slate-700 flex items-center gap-2">
-          <i class="fa-solid fa-list-check text-blue-600"></i>
-          <span>Recorded Expenses</span>
-          <span id="filteredCountBadge" class="bg-blue-100 text-blue-800 text-[11px] px-2 py-0.5 rounded-full font-bold">0</span>
-        </div>
-        <div class="text-xs text-slate-500 italic hidden sm:block">
-          <i class="fa-regular fa-clipboard mr-1"></i> Tip: Press <b>Cmd+V / Ctrl+V</b> to paste screenshots
-        </div>
-      </div>
+    <!-- TABS: EXPENSES vs COMPANY ADVANCES -->
+    <div class="flex items-center gap-2 border-b border-slate-300 pb-1">
+      <button id="tabBtnExpenses" onclick="switchTab('expenses')" class="px-4 py-2 font-bold text-sm border-b-2 border-blue-600 text-blue-700 flex items-center gap-2 transition">
+        <i class="fa-solid fa-receipt"></i>
+        <span>Expenses & Bills</span>
+        <span id="tabCountExpenses" class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full font-extrabold">0</span>
+      </button>
+      <button id="tabBtnFunds" onclick="switchTab('funds')" class="px-4 py-2 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 transition">
+        <i class="fa-solid fa-hand-holding-dollar"></i>
+        <span>Company Advances / Funds</span>
+        <span id="tabCountFunds" class="bg-slate-200 text-slate-700 text-xs px-2 py-0.5 rounded-full font-extrabold">0</span>
+      </button>
+    </div>
 
-      <!-- Desktop Table / Mobile Cards -->
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs sm:text-sm hidden md:table">
-          <thead class="bg-slate-100 text-slate-500 uppercase text-[11px] font-bold tracking-wider border-b border-slate-200">
-            <tr>
-              <th class="px-4 py-3 w-12 text-center">#</th>
-              <th class="px-4 py-3 w-28">Date</th>
-              <th class="px-4 py-3">Description</th>
-              <th class="px-4 py-3 w-28">Category</th>
-              <th class="px-4 py-3 w-28 text-right">Amount</th>
-              <th class="px-4 py-3 w-36 text-center">Attachments</th>
-              <th class="px-4 py-3">Audit Note</th>
-              <th class="px-4 py-3 w-16 text-center">Action</th>
-            </tr>
-          </thead>
-          <tbody id="expensesTableBody" class="divide-y divide-slate-100"></tbody>
-        </table>
-
-        <!-- Mobile Card List View -->
-        <div id="expensesMobileList" class="divide-y divide-slate-100 md:hidden"></div>
-      </div>
-
-      <!-- Empty state -->
-      <div id="emptyState" class="hidden p-12 text-center space-y-3">
-        <div class="w-14 h-14 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-2xl">
-          <i class="fa-regular fa-folder-open"></i>
+    <!-- VIEW 1: EXPENSES TABLE / CARDS -->
+    <div id="viewExpenses" class="space-y-4">
+      <div class="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden">
+        <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+          <div class="font-bold text-sm text-slate-700 flex items-center gap-2">
+            <i class="fa-solid fa-list-check text-blue-600"></i>
+            <span>Itemized Expense Records</span>
+          </div>
+          <div class="text-xs text-slate-500 italic hidden sm:block">
+            <i class="fa-regular fa-clipboard mr-1"></i> Tip: Press <b>Cmd+V / Ctrl+V</b> to paste screenshot
+          </div>
         </div>
-        <div class="text-base font-bold text-slate-600">No expenses recorded yet</div>
-        <p class="text-xs text-slate-400">Add an expense or load the demo tour data to test export features.</p>
-        <div class="flex flex-wrap justify-center gap-2 pt-2">
-          <button onclick="openAddModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5">
-            <i class="fa-solid fa-plus"></i> Add First Expense
-          </button>
-          <button onclick="loadDemoTourData()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5">
-            <i class="fa-solid fa-wand-magic-sparkles"></i> Load Oct Tour Demo (56 Records)
-          </button>
+
+        <!-- Desktop Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm hidden md:table">
+            <thead class="bg-slate-100 text-slate-500 uppercase text-[11px] font-bold tracking-wider border-b border-slate-200">
+              <tr>
+                <th class="px-4 py-3 w-12 text-center">#</th>
+                <th class="px-4 py-3 w-28">Date</th>
+                <th class="px-4 py-3">Description</th>
+                <th class="px-4 py-3 w-28">Category</th>
+                <th class="px-4 py-3 w-28 text-right">Amount</th>
+                <th class="px-4 py-3 w-36 text-center">Attachments</th>
+                <th class="px-4 py-3">Audit Note</th>
+                <th class="px-4 py-3 w-16 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="expensesTableBody" class="divide-y divide-slate-100"></tbody>
+          </table>
+
+          <!-- Mobile Card List View -->
+          <div id="expensesMobileList" class="divide-y divide-slate-100 md:hidden"></div>
+        </div>
+
+        <!-- Empty state -->
+        <div id="emptyState" class="hidden p-12 text-center space-y-3">
+          <div class="w-14 h-14 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-2xl">
+            <i class="fa-regular fa-folder-open"></i>
+          </div>
+          <div class="text-base font-bold text-slate-600">No expenses recorded yet</div>
+          <p class="text-xs text-slate-400">Add an expense or load the demo tour data to test export features.</p>
+          <div class="flex flex-wrap justify-center gap-2 pt-2">
+            <button onclick="openAddModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm flex items-center gap-1.5">
+              <i class="fa-solid fa-plus"></i> Add First Expense
+            </button>
+            <button onclick="loadDemoTourData()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold shadow-sm flex items-center gap-1.5">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Load Oct Tour Demo (56 Records)
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
+    <!-- VIEW 2: COMPANY ADVANCES / FUNDS TABLE / CARDS -->
+    <div id="viewFunds" class="hidden space-y-4">
+      <div class="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden">
+        <div class="px-4 py-3 bg-indigo-50/50 border-b border-indigo-100 flex justify-between items-center">
+          <div class="font-bold text-sm text-indigo-900 flex items-center gap-2">
+            <i class="fa-solid fa-hand-holding-dollar text-indigo-600"></i>
+            <span>Company Advances & Project Funds Received</span>
+          </div>
+          <button onclick="openAddFundModal()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold shadow-xs flex items-center gap-1.5">
+            <i class="fa-solid fa-plus"></i> Add Advance
+          </button>
+        </div>
+
+        <!-- Desktop Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm hidden md:table">
+            <thead class="bg-slate-100 text-slate-500 uppercase text-[11px] font-bold tracking-wider border-b border-slate-200">
+              <tr>
+                <th class="px-4 py-3 w-12 text-center">#</th>
+                <th class="px-4 py-3 w-28">Date Received</th>
+                <th class="px-4 py-3">Source / Company</th>
+                <th class="px-4 py-3 w-32 text-right">Amount (INR)</th>
+                <th class="px-4 py-3 w-28 text-center">Proof / Screenshot</th>
+                <th class="px-4 py-3">Reference / Remarks</th>
+                <th class="px-4 py-3 w-16 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="fundsTableBody" class="divide-y divide-slate-100"></tbody>
+          </table>
+
+          <!-- Mobile Cards -->
+          <div id="fundsMobileList" class="divide-y divide-slate-100 md:hidden"></div>
+        </div>
+
+        <!-- Empty state for Funds -->
+        <div id="emptyFundsState" class="hidden p-12 text-center space-y-3">
+          <div class="w-14 h-14 mx-auto rounded-full bg-indigo-50 flex items-center justify-center text-indigo-400 text-2xl">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+          </div>
+          <div class="text-base font-bold text-slate-600">No company advance recorded</div>
+          <p class="text-xs text-slate-400 max-w-sm mx-auto">Did the company give you an advance before or during your trip? Record it here so the app can calculate your actual reimbursement.</p>
+          <div class="pt-2">
+            <button onclick="openAddFundModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm flex items-center gap-1.5 mx-auto">
+              <i class="fa-solid fa-plus"></i> Record Company Advance
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="pt-6 pb-2 text-center text-xs text-slate-500 space-y-1">
+      <p class="font-bold text-slate-700">Expense Voucher & Advance Manager</p>
+      <p>Designed & Developed with ❤️ by <b>Shiraz Khan</b> • 100% Private Device-Sandbox PWA</p>
+      <p class="text-[11px] text-slate-400">Zero Server Data Leak • Runs entirely inside your browser on iOS, Android & Desktop</p>
+    </footer>
+
   </main>
 
-  <!-- ADD EXPENSE MODAL -->
+  <!-- MODAL 1: ADD EXPENSE MODAL -->
   <div id="addModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
     <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
       
       <!-- Modal Header -->
-      <div class="px-5 py-3.5 bg-blue-900 text-white flex justify-between items-center shrink-0">
+      <div class="px-5 py-3.5 bg-slate-900 text-white flex justify-between items-center shrink-0">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-receipt text-emerald-400"></i>
           <h2 class="font-bold text-base">Record New Expense</h2>
         </div>
-        <button onclick="closeAddModal()" class="text-blue-200 hover:text-white text-lg">
+        <button onclick="closeAddModal()" class="text-slate-400 hover:text-white text-lg">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
@@ -287,7 +406,7 @@
         <!-- Description -->
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-1">Description / Item *</label>
-          <input type="text" id="newDescription" required placeholder="e.g. Zomato lunch, Uber ride, Dinner" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+          <input type="text" id="newDescription" required placeholder="e.g. Zomato lunch, Uber ride, Hotel stay" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
           <!-- Quick suggestions -->
           <div class="flex flex-wrap gap-1.5 mt-1.5 text-[11px]">
             <button type="button" onclick="setDesc('Breakfast')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Breakfast</button>
@@ -335,7 +454,7 @@
           </div>
 
           <div class="flex gap-2">
-            <label class="cursor-pointer bg-white border border-slate-300 hover:border-indigo-500 text-slate-700 text-xs px-3 py-2 rounded-lg font-medium flex items-center gap-2 shadow-sm transition">
+            <label class="cursor-pointer bg-white border border-slate-300 hover:border-indigo-500 text-slate-700 text-xs px-3 py-2 rounded-lg font-medium flex items-center gap-2 shadow-xs transition">
               <i class="fa-solid fa-image text-indigo-600"></i> Choose Screenshot
               <input type="file" id="filePayments" multiple accept="image/*" class="hidden" onchange="handlePaymentFiles(event)">
             </label>
@@ -357,13 +476,13 @@
 
           <div class="flex flex-wrap gap-2">
             <!-- Native Phone Camera -->
-            <label class="cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-lg font-medium flex items-center gap-2 shadow-sm transition">
+            <label class="cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-lg font-medium flex items-center gap-2 shadow-xs transition">
               <i class="fa-solid fa-camera"></i> Take Photo
               <input type="file" id="fileBillsCamera" capture="environment" accept="image/*" class="hidden" onchange="handleBillFiles(event)">
             </label>
 
             <!-- File Upload -->
-            <label class="cursor-pointer bg-white border border-slate-300 hover:border-emerald-500 text-slate-700 text-xs px-3 py-2 rounded-lg font-medium flex items-center gap-2 shadow-sm transition">
+            <label class="cursor-pointer bg-white border border-slate-300 hover:border-emerald-500 text-slate-700 text-xs px-3 py-2 rounded-lg font-medium flex items-center gap-2 shadow-xs transition">
               <i class="fa-solid fa-file-arrow-up text-emerald-600"></i> Choose File
               <input type="file" id="fileBillsUpload" multiple accept="image/*" class="hidden" onchange="handleBillFiles(event)">
             </label>
@@ -379,8 +498,8 @@
           <input type="text" id="newRemark" placeholder="e.g. Bill not available, Water bottle not in bill" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
           <!-- Quick remark chips -->
           <div class="flex flex-wrap gap-1.5 mt-1.5 text-[11px]">
-            <button type="button" onclick="setRemark('Bill not available; cafe name and note added in payment')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Bill not available</button>
-            <button type="button" onclick="setRemark('Canteen bill machine not working')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Machine out of order</button>
+            <button type="button" onclick="setRemark('Bill not available; vendor does not give bill')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Bill not available</button>
+            <button type="button" onclick="setRemark('Bill machine out of order')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Machine out of order</button>
             <button type="button" onclick="setRemark('Extra water bottle charge not included in bill')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Extra water</button>
           </div>
         </div>
@@ -390,6 +509,90 @@
           <button type="button" onclick="closeAddModal()" class="px-4 py-2 border border-slate-300 text-slate-600 text-xs sm:text-sm font-semibold rounded-lg hover:bg-slate-100">Cancel</button>
           <button type="submit" id="btnSaveExpense" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold rounded-lg shadow transition flex items-center gap-2">
             <i class="fa-solid fa-check"></i> Save Expense
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: ADD COMPANY ADVANCE / FUND RECEIVED -->
+  <div id="addFundModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      
+      <!-- Modal Header -->
+      <div class="px-5 py-3.5 bg-indigo-950 text-white flex justify-between items-center shrink-0">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-hand-holding-dollar text-indigo-400"></i>
+          <h2 class="font-bold text-base">Record Company Advance / Fund</h2>
+        </div>
+        <button onclick="closeAddFundModal()" class="text-slate-400 hover:text-white text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <form id="addFundForm" class="p-5 space-y-4 overflow-y-auto" onsubmit="submitNewFund(event)">
+        
+        <!-- Date -->
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">Date Received *</label>
+          <input type="date" id="fundDate" required class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+        </div>
+
+        <!-- Advance Amount -->
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="text-xs font-bold text-slate-600">Advance Amount (INR) *</label>
+            <span id="fundCalculatedBadge" class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">Amount: ₹ 0.00</span>
+          </div>
+          <input type="text" id="fundAmount" required placeholder="e.g. 20000 or 20000+5000" oninput="updateFundCalculatedTotal()" class="w-full text-sm font-semibold px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+          <p class="text-[11px] text-slate-400 mt-1">Split additions supported (e.g., <code class="bg-slate-100 px-1 rounded">20000+5000</code>).</p>
+        </div>
+
+        <!-- Source / Given By -->
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">Source / Given By *</label>
+          <input type="text" id="fundSource" required placeholder="e.g. Head Office Transfer, Project Advance, Client Petty Cash" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+          <div class="flex flex-wrap gap-1.5 mt-1.5 text-[11px]">
+            <button type="button" onclick="setFundSource('Head Office Account Transfer')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Head Office</button>
+            <button type="button" onclick="setFundSource('Project Tour Advance')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Tour Advance</button>
+            <button type="button" onclick="setFundSource('Client Advance')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Client Advance</button>
+            <button type="button" onclick="setFundSource('Finance Dept - Extra Fund')" class="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600">Extra Fund</button>
+          </div>
+        </div>
+
+        <!-- Bank Proof / Credit Screenshot -->
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+              <i class="fa-solid fa-mobile-screen text-indigo-600"></i>
+              <span>Transfer Proof / Screenshot</span>
+            </span>
+            <span class="text-[11px] text-indigo-600 font-medium">Cmd+V to Paste</span>
+          </div>
+
+          <div class="flex gap-2">
+            <label class="cursor-pointer bg-white border border-slate-300 hover:border-indigo-500 text-slate-700 text-xs px-3 py-2 rounded-lg font-medium flex items-center gap-2 shadow-xs transition">
+              <i class="fa-solid fa-image text-indigo-600"></i> Choose Screenshot / Slip
+              <input type="file" id="fileFundProof" multiple accept="image/*" class="hidden" onchange="handleFundFiles(event)">
+            </label>
+          </div>
+
+          <!-- Thumbnails list -->
+          <div id="fundThumbnails" class="flex flex-wrap gap-2 pt-1"></div>
+        </div>
+
+        <!-- Reference / UTR / Remarks -->
+        <div>
+          <label class="block text-xs font-bold text-slate-600 mb-1">Reference / UTR / Remarks</label>
+          <input type="text" id="fundRemark" placeholder="e.g. NEFT Ref #129381, Onsite travel advance" class="w-full text-xs sm:text-sm px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+        </div>
+
+        <!-- Submit Button -->
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closeAddFundModal()" class="px-4 py-2 border border-slate-300 text-slate-600 text-xs sm:text-sm font-semibold rounded-lg hover:bg-slate-100">Cancel</button>
+          <button type="submit" id="btnSaveFund" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold rounded-lg shadow transition flex items-center gap-2">
+            <i class="fa-solid fa-check"></i> Save Advance Fund
           </button>
         </div>
       </form>
@@ -410,8 +613,12 @@
   <!-- JAVASCRIPT LOGIC -->
   <script>
     let currentExpenses = [];
+    let currentFunds = [];
+    let activeTab = 'expenses'; // 'expenses' or 'funds'
+
     let pendingPayments = []; // Array of { name, blob, mimeType }
     let pendingBills = [];    // Array of { name, blob, mimeType }
+    let pendingFundProofs = []; // Array of { name, blob, mimeType }
 
     // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
@@ -424,29 +631,59 @@
     document.addEventListener('DOMContentLoaded', async () => {
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('newDate').value = today;
+      document.getElementById('fundDate').value = today;
 
       // Setup global paste event listener
       window.addEventListener('paste', handleGlobalPaste);
 
       // Initialize DB & load
       await window.appDB.init();
-      await loadExpenses();
+      await refreshAllData();
     });
+
+    // Tab Switching
+    function switchTab(tab) {
+      activeTab = tab;
+      const tabExp = document.getElementById('tabBtnExpenses');
+      const tabFnd = document.getElementById('tabBtnFunds');
+      const viewExp = document.getElementById('viewExpenses');
+      const viewFnd = document.getElementById('viewFunds');
+
+      if (tab === 'expenses') {
+        tabExp.className = "px-4 py-2 font-bold text-sm border-b-2 border-blue-600 text-blue-700 flex items-center gap-2 transition";
+        tabFnd.className = "px-4 py-2 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 transition";
+        viewExp.classList.remove('hidden');
+        viewFnd.classList.add('hidden');
+      } else {
+        tabExp.className = "px-4 py-2 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 transition";
+        tabFnd.className = "px-4 py-2 font-bold text-sm border-b-2 border-indigo-600 text-indigo-700 flex items-center gap-2 transition";
+        viewExp.classList.add('hidden');
+        viewFnd.classList.remove('hidden');
+      }
+    }
 
     // Preset Cycles
     function setCyclePreset(type) {
       const sInput = document.getElementById('filterStartDate');
       const eInput = document.getElementById('filterEndDate');
+      const today = new Date();
 
       if (type === 'all') {
         sInput.value = '';
         eInput.value = '';
-      } else if (type === 'nov') {
-        sInput.value = '2026-11-05';
-        eInput.value = '2026-11-30';
       } else if (type === 'oct') {
         sInput.value = '2026-10-06';
         eInput.value = '2026-10-18';
+      } else if (type === 'this_month') {
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        sInput.value = `${year}-${month}-01`;
+        eInput.value = today.toISOString().split('T')[0];
+      } else if (type === 'last_30') {
+        const past = new Date(today);
+        past.setDate(past.getDate() - 30);
+        sInput.value = past.toISOString().split('T')[0];
+        eInput.value = today.toISOString().split('T')[0];
       }
       applyFilter();
     }
@@ -456,7 +693,7 @@
       const e = document.getElementById('filterEndDate').value;
       const c = document.getElementById('filterCategory').value;
       const q = document.getElementById('filterSearch').value;
-      await loadExpenses(s, e, c, q);
+      await refreshAllData(s, e, c, q);
     }
 
     async function resetFilter() {
@@ -464,35 +701,91 @@
       document.getElementById('filterEndDate').value = '';
       document.getElementById('filterCategory').value = 'all';
       document.getElementById('filterSearch').value = '';
-      await loadExpenses();
+      await refreshAllData();
     }
 
-    // Load from IndexedDB
-    async function loadExpenses(start='', end='', cat='all', search='') {
+    // Refresh Both Expenses and Funds
+    async function refreshAllData(start='', end='', cat='all', search='') {
       try {
         currentExpenses = await window.appDB.getAllExpenses(start, end, cat, search);
-        renderDashboard(currentExpenses);
+        currentFunds = await window.appDB.getAllFunds(start, end, search);
+        renderDashboard(currentExpenses, currentFunds);
       } catch (err) {
-        console.error("Error loading expenses from IndexedDB:", err);
+        console.error("Error loading data from IndexedDB:", err);
       }
     }
 
-    function renderDashboard(list) {
-      const totalAmount = list.reduce((sum, e) => sum + (e.amountTotal || 0), 0);
-      document.getElementById('statTotalAmount').textContent = `₹ ${totalAmount.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
-      document.getElementById('statTotalCount').textContent = `${list.length} Items`;
+    // Render Hero Cards & Both Lists
+    function renderDashboard(expenses, funds) {
+      // 1. Calculate Totals
+      const totalExpenses = expenses.reduce((sum, e) => sum + (e.amountTotal || 0), 0);
+      const totalAdvance = funds.reduce((sum, f) => sum + (f.amountTotal || 0), 0);
+      const netSettlement = Math.round((totalExpenses - totalAdvance) * 100) / 100;
+
+      // 2. Update Card 1 (Advance)
+      document.getElementById('statTotalAdvance').textContent = `₹ ${totalAdvance.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+      document.getElementById('statAdvanceCount').textContent = `${funds.length} Advance credit${funds.length === 1 ? '' : 's'}`;
+      document.getElementById('tabCountFunds').textContent = funds.length;
+
+      // 3. Update Card 2 (Expenses)
+      document.getElementById('statTotalAmount').textContent = `₹ ${totalExpenses.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+      document.getElementById('statTotalCount').textContent = `${expenses.length} Vouchers in filtered cycle`;
+      document.getElementById('tabCountExpenses').textContent = expenses.length;
 
       let billsCount = 0;
       let noBillCount = 0;
-      list.forEach(e => {
+      expenses.forEach(e => {
         if (e.bills && e.bills.length > 0) billsCount += e.bills.length;
         else noBillCount++;
       });
-
       document.getElementById('statBillsCount').textContent = billsCount;
       document.getElementById('statNoBillCount').textContent = noBillCount;
-      document.getElementById('filteredCountBadge').textContent = list.length;
 
+      // 4. Update Card 3 (Settlement Calculation)
+      const settlementCard = document.getElementById('settlementCard');
+      const statusLabel = document.getElementById('settlementStatusLabel');
+      const pill = document.getElementById('settlementPill');
+      const amountDisp = document.getElementById('statSettlementAmount');
+      const sub = document.getElementById('statSettlementSub');
+      const footnote = document.getElementById('settlementFootNote');
+
+      if (netSettlement > 0) {
+        // Expenses exceed Advance -> Employee is owed reimbursement!
+        settlementCard.className = "bg-gradient-to-br from-emerald-600 to-teal-800 text-white rounded-2xl p-4 shadow-md flex flex-col justify-between";
+        statusLabel.textContent = "Reimbursement Due";
+        pill.textContent = "Company Payable";
+        pill.className = "text-[10px] font-bold bg-white/20 text-white px-2 py-0.5 rounded-full backdrop-blur-xs";
+        amountDisp.textContent = `₹ ${netSettlement.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+        sub.textContent = `Out-of-pocket expenses beyond company advance`;
+        footnote.textContent = `Company owes this balance to employee`;
+      } else if (netSettlement < 0) {
+        // Advance exceeds Expenses -> Employee has unspent company money
+        settlementCard.className = "bg-gradient-to-br from-indigo-700 to-slate-900 text-white rounded-2xl p-4 shadow-md flex flex-col justify-between";
+        statusLabel.textContent = "Advance Remaining";
+        pill.textContent = "Balance to Return";
+        pill.className = "text-[10px] font-bold bg-amber-400 text-slate-950 px-2 py-0.5 rounded-full font-black";
+        amountDisp.textContent = `₹ ${Math.abs(netSettlement).toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+        sub.textContent = `Unspent advance funds remaining in hand`;
+        footnote.textContent = `Balance to return to company account`;
+      } else {
+        // Exactly Settled
+        settlementCard.className = "bg-gradient-to-br from-slate-700 to-slate-900 text-white rounded-2xl p-4 shadow-md flex flex-col justify-between";
+        statusLabel.textContent = "Settlement Balance";
+        pill.textContent = "Fully Settled";
+        pill.className = "text-[10px] font-bold bg-emerald-400 text-slate-950 px-2 py-0.5 rounded-full font-black";
+        amountDisp.textContent = `₹ 0.00`;
+        sub.textContent = `Total expenses match company advance`;
+        footnote.textContent = `Zero out-of-pocket claim`;
+      }
+
+      // 5. Render Expenses Table & Mobile Cards
+      renderExpensesList(expenses);
+
+      // 6. Render Advances Table & Mobile Cards
+      renderFundsList(funds);
+    }
+
+    function renderExpensesList(list) {
       const tbody = document.getElementById('expensesTableBody');
       const mobileList = document.getElementById('expensesMobileList');
       const emptyState = document.getElementById('emptyState');
@@ -567,6 +860,73 @@
       });
     }
 
+    function renderFundsList(list) {
+      const tbody = document.getElementById('fundsTableBody');
+      const mobileList = document.getElementById('fundsMobileList');
+      const emptyState = document.getElementById('emptyFundsState');
+
+      tbody.innerHTML = '';
+      mobileList.innerHTML = '';
+
+      if (list.length === 0) {
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      emptyState.classList.add('hidden');
+
+      list.forEach((f, idx) => {
+        const sNo = idx + 1;
+        const proofs = f.payments || [];
+
+        // Desktop Row
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition";
+        tr.innerHTML = `
+          <td class="px-4 py-3 text-center font-bold text-slate-400">${sNo}</td>
+          <td class="px-4 py-3 font-semibold text-slate-600 whitespace-nowrap">${f.date}</td>
+          <td class="px-4 py-3 font-bold text-indigo-950">${f.source || 'Company Advance'}</td>
+          <td class="px-4 py-3 text-right font-extrabold text-indigo-700 whitespace-nowrap">₹ ${f.amountExpression || f.amountTotal}</td>
+          <td class="px-4 py-3 text-center">
+            <div class="flex items-center justify-center gap-1.5">
+              ${renderBlobThumbnails(proofs, 'Transfer Proof')}
+              ${proofs.length === 0 ? '<span class="text-[10px] text-slate-400 italic">No slip</span>' : ''}
+            </div>
+          </td>
+          <td class="px-4 py-3 text-slate-600 text-xs">${f.remark || '-'}</td>
+          <td class="px-4 py-3 text-center">
+            <button onclick="deleteFundItem(${f.id})" class="text-slate-400 hover:text-rose-600 transition" title="Delete">
+              <i class="fa-regular fa-trash-can"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+
+        // Mobile Card
+        const card = document.createElement('div');
+        card.className = "p-4 space-y-2 hover:bg-slate-50 transition";
+        card.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-400">#${sNo}</span>
+              <span class="text-xs text-slate-500 font-semibold">${f.date}</span>
+            </div>
+            <div class="text-sm font-extrabold text-indigo-700">₹ ${f.amountExpression || f.amountTotal}</div>
+          </div>
+          <div class="font-bold text-indigo-950 text-sm">${f.source || 'Company Advance'}</div>
+          ${f.remark ? `<div class="text-xs text-slate-600 italic bg-indigo-50/50 p-1.5 rounded border border-indigo-100">${f.remark}</div>` : ''}
+          <div class="flex items-center justify-between pt-1">
+            <div class="flex items-center gap-1.5">
+              ${renderBlobThumbnails(proofs, 'Transfer Proof')}
+            </div>
+            <button onclick="deleteFundItem(${f.id})" class="text-slate-400 hover:text-rose-600 text-xs p-1">
+              <i class="fa-regular fa-trash-can"></i>
+            </button>
+          </div>
+        `;
+        mobileList.appendChild(card);
+      });
+    }
+
     function renderBlobThumbnails(items, type) {
       if (!items || items.length === 0) return '';
       return items.map((item, idx) => {
@@ -590,7 +950,7 @@
       }
     }
 
-    // Modal
+    // Modal Expense Controls
     function openAddModal() {
       document.getElementById('addModal').classList.remove('hidden');
       pendingPayments = [];
@@ -607,8 +967,24 @@
       renderThumbnails();
     }
 
+    // Modal Fund Controls
+    function openAddFundModal() {
+      document.getElementById('addFundModal').classList.remove('hidden');
+      pendingFundProofs = [];
+      renderFundThumbnails();
+      document.getElementById('fundAmount').focus();
+    }
+
+    function closeAddFundModal() {
+      document.getElementById('addFundModal').classList.add('hidden');
+      document.getElementById('addFundForm').reset();
+      pendingFundProofs = [];
+      renderFundThumbnails();
+    }
+
     function setDesc(val) { document.getElementById('newDescription').value = val; }
     function setRemark(val) { document.getElementById('newRemark').value = val; }
+    function setFundSource(val) { document.getElementById('fundSource').value = val; }
 
     function selectCategory(cat) {
       document.getElementById('newCategory').value = cat;
@@ -625,6 +1001,12 @@
       const val = document.getElementById('newAmount').value;
       const total = window.appDB.parseAmount(val);
       document.getElementById('calculatedTotalBadge').textContent = `Total: ₹ ${total.toFixed(2)}`;
+    }
+
+    function updateFundCalculatedTotal() {
+      const val = document.getElementById('fundAmount').value;
+      const total = window.appDB.parseAmount(val);
+      document.getElementById('fundCalculatedBadge').textContent = `Amount: ₹ ${total.toFixed(2)}`;
     }
 
     // File Handling
@@ -644,6 +1026,14 @@
       renderThumbnails();
     }
 
+    function handleFundFiles(e) {
+      const files = Array.from(e.target.files);
+      files.forEach(f => {
+        pendingFundProofs.push({ name: f.name, blob: f, mimeType: f.type });
+      });
+      renderFundThumbnails();
+    }
+
     function handleGlobalPaste(e) {
       if (!e.clipboardData || !e.clipboardData.items) return;
       const items = e.clipboardData.items;
@@ -651,12 +1041,21 @@
         if (items[i].type.indexOf('image') !== -1) {
           const blob = items[i].getAsFile();
           if (blob) {
-            if (document.getElementById('addModal').classList.contains('hidden')) {
-              openAddModal();
+            if (!document.getElementById('addFundModal').classList.contains('hidden') || activeTab === 'funds') {
+              if (document.getElementById('addFundModal').classList.contains('hidden')) {
+                openAddFundModal();
+              }
+              pendingFundProofs.push({ name: `fund_transfer_${Date.now()}.png`, blob: blob, mimeType: blob.type });
+              renderFundThumbnails();
+              showToast("Transfer screenshot attached to advance!");
+            } else {
+              if (document.getElementById('addModal').classList.contains('hidden')) {
+                openAddModal();
+              }
+              pendingPayments.push({ name: `pasted_screenshot_${Date.now()}.png`, blob: blob, mimeType: blob.type });
+              renderThumbnails();
+              showToast("Payment screenshot attached from clipboard!");
             }
-            pendingPayments.push({ name: `pasted_screenshot_${Date.now()}.png`, blob: blob, mimeType: blob.type });
-            renderThumbnails();
-            showToast("Screenshot attached from clipboard!");
             break;
           }
         }
@@ -682,10 +1081,21 @@
       `).join('');
     }
 
+    function renderFundThumbnails() {
+      const container = document.getElementById('fundThumbnails');
+      container.innerHTML = pendingFundProofs.map((f, i) => `
+        <div class="relative w-12 h-12 rounded border border-slate-300 overflow-hidden shadow-xs">
+          <img src="${URL.createObjectURL(f.blob)}" class="w-full h-full object-cover">
+          <button type="button" onclick="removePendingFundProof(${i})" class="absolute top-0 right-0 bg-rose-600 text-white w-4 h-4 text-[9px] flex items-center justify-center font-bold">✕</button>
+        </div>
+      `).join('');
+    }
+
     function removePendingPayment(i) { pendingPayments.splice(i, 1); renderThumbnails(); }
     function removePendingBill(i) { pendingBills.splice(i, 1); renderThumbnails(); }
+    function removePendingFundProof(i) { pendingFundProofs.splice(i, 1); renderFundThumbnails(); }
 
-    // Save to IndexedDB
+    // Save Expense
     async function submitNewExpense(e) {
       e.preventDefault();
       const btn = document.getElementById('btnSaveExpense');
@@ -722,6 +1132,40 @@
       await applyFilter();
     }
 
+    // Save Fund
+    async function submitNewFund(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSaveFund');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Saving...`;
+
+      try {
+        await window.appDB.addFund({
+          date: document.getElementById('fundDate').value,
+          amountExpression: document.getElementById('fundAmount').value,
+          source: document.getElementById('fundSource').value,
+          remark: document.getElementById('fundRemark').value,
+          payments: pendingFundProofs
+        });
+
+        closeAddFundModal();
+        showToast("Company advance saved!");
+        await applyFilter();
+      } catch (err) {
+        alert("Error saving fund: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-check"></i> Save Advance Fund`;
+      }
+    }
+
+    async function deleteFundItem(id) {
+      if (!confirm("Delete this company advance entry?")) return;
+      await window.appDB.deleteFund(id);
+      showToast("Advance entry removed.");
+      await applyFilter();
+    }
+
     // In-Browser Exports (100% Client-Side)
     async function triggerExport(type) {
       if (currentExpenses.length === 0) {
@@ -733,6 +1177,18 @@
       const e = document.getElementById('filterEndDate').value || 'end';
       const label = `${s}_to_${e}`;
 
+      const totalExpenses = currentExpenses.reduce((sum, exp) => sum + (exp.amountTotal || 0), 0);
+      const totalAdvance = currentFunds.reduce((sum, f) => sum + (f.amountTotal || 0), 0);
+      const netBalance = Math.round((totalExpenses - totalAdvance) * 100) / 100;
+
+      const fundsSummary = {
+        totalAdvance: totalAdvance,
+        totalExpenses: totalExpenses,
+        netBalance: netBalance,
+        isReimbursement: netBalance >= 0,
+        advanceCount: currentFunds.length
+      };
+
       const btn = document.getElementById(`btnExport${type.toUpperCase() === 'ZIP' ? 'Zip' : type.toUpperCase() === 'EXCEL' ? 'Excel' : 'PDF'}`);
       const origHtml = btn.innerHTML;
       btn.disabled = true;
@@ -740,21 +1196,22 @@
 
       try {
         if (type === 'pdf') {
-          const pdfBlob = await window.generatePDFVouchers(currentExpenses, label);
+          const pdfBlob = await window.generatePDFVouchers(currentExpenses, label, fundsSummary);
           saveAs(pdfBlob, `Expense_Vouchers_${label}.pdf`);
           showToast("PDF Vouchers downloaded!");
         } else if (type === 'excel') {
-          const xlsxBlob = window.generateExcelReport(currentExpenses, label);
+          const xlsxBlob = window.generateExcelReport(currentExpenses, label, currentFunds);
           saveAs(xlsxBlob, `Expense_Report_${label}.xlsx`);
           showToast("Excel spreadsheet downloaded!");
         } else if (type === 'zip') {
           const zip = new JSZip();
-          const pdfBlob = await window.generatePDFVouchers(currentExpenses, label);
+          const pdfBlob = await window.generatePDFVouchers(currentExpenses, label, fundsSummary);
           zip.file(`Expense_Vouchers_${label}.pdf`, pdfBlob);
 
-          const xlsxBlob = window.generateExcelReport(currentExpenses, label);
+          const xlsxBlob = window.generateExcelReport(currentExpenses, label, currentFunds);
           zip.file(`Expense_Report_${label}.xlsx`, xlsxBlob);
 
+          // Receipts folder
           const receiptsFolder = zip.folder("Receipts");
           currentExpenses.forEach((exp, idx) => {
             const prefix = `Voucher_${String(idx + 1).padStart(2, '0')}`;
@@ -765,6 +1222,17 @@
               receiptsFolder.file(`${prefix}_Bill_${bIdx+1}_${b.name || 'bill.jpg'}`, b.blob);
             });
           });
+
+          // Advances folder
+          if (currentFunds.length > 0) {
+            const advFolder = zip.folder("Advances");
+            currentFunds.forEach((f, idx) => {
+              const prefix = `Advance_${String(idx + 1).padStart(2, '0')}`;
+              (f.payments || []).forEach((p, pIdx) => {
+                advFolder.file(`${prefix}_Proof_${pIdx+1}_${p.name || 'slip.jpg'}`, p.blob);
+              });
+            });
+          }
 
           const zipBlob = await zip.generateAsync({ type: "blob" });
           saveAs(zipBlob, `Expense_Bundle_${label}.zip`);
@@ -778,16 +1246,17 @@
       }
     }
 
-    // Data Backup
+    // Data Backup (Backs up both expenses and funds)
     async function backupData() {
-      const all = await window.appDB.getAllExpenses();
-      if (all.length === 0) {
+      const allExpenses = await window.appDB.getAllExpenses();
+      const allFunds = await window.appDB.getAllFunds();
+
+      if (allExpenses.length === 0 && allFunds.length === 0) {
         alert("No data to backup!");
         return;
       }
 
-      // Convert Blobs to Base64 for JSON serialization
-      const serialized = await Promise.all(all.map(async (e) => {
+      const serializedExpenses = await Promise.all(allExpenses.map(async (e) => {
         const pBase64 = await Promise.all((e.payments || []).map(async p => ({
           name: p.name,
           mimeType: p.mimeType,
@@ -801,7 +1270,24 @@
         return { ...e, payments: pBase64, bills: bBase64 };
       }));
 
-      const jsonStr = JSON.stringify(serialized, null, 2);
+      const serializedFunds = await Promise.all(allFunds.map(async (f) => {
+        const pBase64 = await Promise.all((f.payments || []).map(async p => ({
+          name: p.name,
+          mimeType: p.mimeType,
+          data: await blobToBase64(p.blob)
+        })));
+        return { ...f, payments: pBase64 };
+      }));
+
+      const fullBackup = {
+        version: 2,
+        developer: "Shiraz Khan",
+        timestamp: new Date().toISOString(),
+        expenses: serializedExpenses,
+        funds: serializedFunds
+      };
+
+      const jsonStr = JSON.stringify(fullBackup, null, 2);
       const blob = new Blob([jsonStr], { type: "application/json" });
       saveAs(blob, `Expense_Backup_${new Date().toISOString().split('T')[0]}.json`);
       showToast("Backup file downloaded!");
@@ -828,7 +1314,7 @@
       return new Blob([u8arr], {type: mime});
     }
 
-    // Restore Backup
+    // Restore Backup (Handles both v1 array and v2 object)
     async function restoreData(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -836,13 +1322,20 @@
       const reader = new FileReader();
       reader.onload = async (e) => {
         try {
-          const items = JSON.parse(e.target.result);
-          if (!Array.isArray(items)) {
-            throw new Error('Invalid backup format: expected an array of expenses.');
+          const payload = JSON.parse(e.target.result);
+          let items = [];
+          let fundsList = [];
+
+          if (Array.isArray(payload)) {
+            items = payload;
+          } else if (payload && typeof payload === 'object') {
+            items = payload.expenses || [];
+            fundsList = payload.funds || [];
           }
 
-          if (!confirm(`Found ${items.length} expenses in backup file. Import them into this device?`)) return;
+          if (!confirm(`Restore ${items.length} expenses and ${fundsList.length} company advances into this device?`)) return;
 
+          // Restore expenses
           for (const item of items) {
             const payments = (item.payments || []).map(p => {
               if (p.data && typeof p.data === 'string' && p.data.startsWith('data:')) {
@@ -850,7 +1343,6 @@
               }
               return p;
             });
-
             const bills = (item.bills || []).map(b => {
               if (b.data && typeof b.data === 'string' && b.data.startsWith('data:')) {
                 return { name: b.name, blob: dataURLtoBlob(b.data), mimeType: b.mimeType };
@@ -870,7 +1362,25 @@
             });
           }
 
-          showToast(`Restored ${items.length} expenses!`);
+          // Restore funds
+          for (const f of fundsList) {
+            const payments = (f.payments || []).map(p => {
+              if (p.data && typeof p.data === 'string' && p.data.startsWith('data:')) {
+                return { name: p.name, blob: dataURLtoBlob(p.data), mimeType: p.mimeType };
+              }
+              return p;
+            });
+
+            await window.appDB.addFund({
+              date: f.date,
+              source: f.source,
+              amountExpression: f.amountExpression || f.amountTotal,
+              remark: f.remark || '',
+              payments: payments
+            });
+          }
+
+          showToast(`Restored ${items.length} expenses and ${fundsList.length} advances!`);
           await applyFilter();
         } catch (err) {
           alert('Error restoring backup: ' + err.message);
@@ -896,7 +1406,7 @@
 
     // Clear All Data
     async function clearAllData() {
-      if (confirm("Are you sure you want to delete ALL expense records from this device? Make sure you have downloaded a Backup, PDF, or Excel sheet first!")) {
+      if (confirm("Are you sure you want to delete ALL records (expenses and company advances) from this device? Make sure you have downloaded a Backup, PDF, or Excel sheet first!")) {
         if (confirm("Confirm one more time: delete all local records?")) {
           await window.appDB.clearAll();
           showToast("All data cleared from device.");
@@ -916,7 +1426,7 @@
     // Toast
     function showToast(msg) {
       const toast = document.createElement('div');
-      toast.className = "fixed bottom-5 right-5 bg-slate-900 text-white text-xs px-4 py-2.5 rounded-xl shadow-lg z-50 flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2";
+      toast.className = "fixed bottom-5 right-5 bg-slate-900 text-white text-xs px-4 py-2.5 rounded-xl shadow-lg z-50 flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2 border border-slate-700";
       toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i> ${msg}`;
       document.body.appendChild(toast);
       setTimeout(() => toast.remove(), 2500);

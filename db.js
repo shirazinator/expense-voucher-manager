@@ -1,11 +1,16 @@
 /**
- * IndexedDB Local Database Engine
+ * IndexedDB Local Database Engine (Version 2)
+ * Manages both:
+ * 1. Expenses & Softcopy Bills
+ * 2. Company Advances / Funds Received
+ * 
  * 100% private to the user's browser / phone storage.
  * Zero data sent to any server.
+ * Developed by Shiraz Khan
  */
 
 const DB_NAME = 'ExpenseVoucherDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 class ExpenseDB {
   constructor() {
@@ -19,10 +24,16 @@ class ExpenseDB {
 
       request.onupgradeneeded = (e) => {
         const db = e.target.result;
+        // ObjectStore 1: Expenses
         if (!db.objectStoreNames.contains('expenses')) {
           const store = db.createObjectStore('expenses', { keyPath: 'id', autoIncrement: true });
           store.createIndex('date', 'date', { unique: false });
           store.createIndex('category', 'category', { unique: false });
+        }
+        // ObjectStore 2: Company Advances / Funds Received
+        if (!db.objectStoreNames.contains('funds')) {
+          const fundStore = db.createObjectStore('funds', { keyPath: 'id', autoIncrement: true });
+          fundStore.createIndex('date', 'date', { unique: false });
         }
       };
 
@@ -52,6 +63,8 @@ class ExpenseDB {
     }
     return Math.round(total * 100) / 100;
   }
+
+  // ================= EXPENSES =================
 
   async addExpense(data) {
     await this.init();
@@ -160,25 +173,89 @@ class ExpenseDB {
     });
   }
 
-  async getExpenseById(id) {
+  // ================= COMPANY ADVANCES / FUNDS RECEIVED =================
+
+  async addFund(data) {
     await this.init();
     return new Promise((resolve, reject) => {
-      const tx = this.db.transaction('expenses', 'readonly');
-      const store = tx.objectStore('expenses');
-      const req = store.get(Number(id));
+      const tx = this.db.transaction('funds', 'readwrite');
+      const store = tx.objectStore('funds');
+
+      const total = this.parseAmount(data.amountExpression || data.amount);
+
+      const record = {
+        date: data.date,
+        source: data.source || 'Company Advance',
+        amountExpression: String(data.amountExpression || data.amount || '0'),
+        amountTotal: total,
+        remark: data.remark || '',
+        payments: data.payments || [], // Array of { name, blob, mimeType } (e.g. Bank credit screenshot)
+        createdAt: new Date().toISOString()
+      };
+
+      const req = store.add(record);
       req.onsuccess = () => resolve(req.result);
       req.onerror = () => reject(req.error);
     });
   }
 
+  async deleteFund(id) {
+    await this.init();
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction('funds', 'readwrite');
+      const store = tx.objectStore('funds');
+      const req = store.delete(Number(id));
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async getAllFunds(startDate = null, endDate = null, search = '') {
+    await this.init();
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction('funds', 'readonly');
+      const store = tx.objectStore('funds');
+      const req = store.getAll();
+
+      req.onsuccess = () => {
+        let list = req.result || [];
+
+        list.sort((a, b) => {
+          if (a.date === b.date) return (a.id || 0) - (b.id || 0);
+          return a.date.localeCompare(b.date);
+        });
+
+        if (startDate) {
+          list = list.filter(f => f.date >= startDate);
+        }
+        if (endDate) {
+          list = list.filter(f => f.date <= endDate);
+        }
+        if (search) {
+          const s = search.toLowerCase();
+          list = list.filter(f => 
+            (f.source && f.source.toLowerCase().includes(s)) ||
+            (f.remark && f.remark.toLowerCase().includes(s))
+          );
+        }
+
+        resolve(list);
+      };
+
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  // ================= GENERAL =================
+
   async clearAll() {
     await this.init();
     return new Promise((resolve, reject) => {
-      const tx = this.db.transaction('expenses', 'readwrite');
-      const store = tx.objectStore('expenses');
-      const req = store.clear();
-      req.onsuccess = () => resolve(true);
-      req.onerror = () => reject(req.error);
+      const tx = this.db.transaction(['expenses', 'funds'], 'readwrite');
+      tx.objectStore('expenses').clear();
+      tx.objectStore('funds').clear();
+      tx.oncomplete = () => resolve(true);
+      tx.onerror = () => reject(tx.error);
     });
   }
 }
