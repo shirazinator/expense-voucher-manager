@@ -58,13 +58,16 @@
 
       <!-- Action Buttons -->
       <div class="flex items-center gap-2">
-        <button onclick="openAddFundModal()" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-xs sm:text-sm px-3.5 py-2 rounded-xl shadow-md transition flex items-center gap-2">
-          <i class="fa-solid fa-hand-holding-dollar"></i>
-          <span>+ Add Advance</span>
+        <button onclick="forceRefreshApp()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition shrink-0" title="Refresh & load latest app version">
+          <i class="fa-solid fa-arrows-rotate text-xs"></i>
         </button>
-        <button onclick="openAddModal()" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-bold text-xs sm:text-sm px-3.5 py-2 rounded-xl shadow-md transition flex items-center gap-2">
+        <button onclick="openAddFundModal()" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-xs sm:text-sm px-3 sm:px-3.5 py-2 rounded-xl shadow-md transition flex items-center gap-1.5 shrink-0">
+          <i class="fa-solid fa-hand-holding-dollar"></i>
+          <span>+ Advance</span>
+        </button>
+        <button onclick="openAddModal()" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-bold text-xs sm:text-sm px-3.5 sm:px-4 py-2 rounded-xl shadow-md transition flex items-center gap-1.5 shrink-0">
           <i class="fa-solid fa-receipt"></i>
-          <span>+ Add Expense</span>
+          <span>+ Expense</span>
         </button>
       </div>
 
@@ -73,29 +76,26 @@
 
   <main class="max-w-6xl mx-auto px-4 py-5 space-y-5">
 
-    <!-- PRIVACY & BACKUP BANNER -->
-    <div class="bg-white border border-slate-200 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600 shadow-xs">
-      <div class="flex items-center gap-2.5">
+    <!-- PRIVACY & DATA BACKUP BANNER (Fully Responsive for Mobile) -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-600 shadow-xs">
+      <div class="flex items-center gap-2.5 min-w-0">
         <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
           <i class="fa-solid fa-shield-check"></i>
         </div>
-        <span><b>Device Sandbox Storage:</b> All expenses, company advances, bank proofs, and softcopy bills are saved <b>strictly in your device's browser</b>. Zero server data leakage.</span>
+        <p class="leading-relaxed"><b>Device Sandbox Storage:</b> All expenses and advances are saved <b>locally in your browser</b>. Zero server data leakage.</p>
       </div>
-      <div class="flex items-center gap-3 shrink-0 text-slate-700">
-        <button onclick="forceRefreshApp()" class="font-bold underline text-blue-600 hover:text-blue-800 flex items-center gap-1" title="Check and load latest app update">
+      <div class="flex flex-wrap items-center gap-2 pt-2 sm:pt-0 shrink-0 border-t sm:border-t-0 border-slate-100">
+        <button onclick="forceRefreshApp()" class="px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold flex items-center gap-1.5 transition text-[11px]">
           <i class="fa-solid fa-arrows-rotate"></i> Refresh App
         </button>
-        <span class="text-slate-300">|</span>
-        <button onclick="backupData()" class="font-bold underline hover:text-blue-700 flex items-center gap-1" title="Download private backup JSON">
-          <i class="fa-solid fa-download"></i> Backup
+        <button onclick="backupData()" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold flex items-center gap-1.5 transition text-[11px]" title="Download private backup JSON">
+          <i class="fa-solid fa-download text-blue-600"></i> Backup
         </button>
-        <span class="text-slate-300">|</span>
-        <label class="font-bold underline hover:text-blue-700 flex items-center gap-1 cursor-pointer" title="Restore from backup JSON">
-          <i class="fa-solid fa-upload"></i> Restore
+        <label class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold flex items-center gap-1.5 cursor-pointer transition text-[11px]" title="Restore from backup JSON">
+          <i class="fa-solid fa-upload text-emerald-600"></i> Restore
           <input type="file" accept=".json" class="hidden" onchange="restoreData(event)">
         </label>
-        <span class="text-slate-300">|</span>
-        <button onclick="clearAllData()" class="text-rose-600 hover:text-rose-800 font-bold underline flex items-center gap-1" title="Wipe local storage">
+        <button onclick="clearAllData()" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold flex items-center gap-1.5 transition text-[11px]" title="Wipe local storage">
           <i class="fa-regular fa-trash-can"></i> Clear All
         </button>
       </div>
